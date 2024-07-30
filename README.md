@@ -33,6 +33,11 @@ then use GNU stow to create symlinks
 $ stow .
 ```
 
+use the adopt flag if the file already exists
+```
+$ stow --adopt .
+```
+
 ## References
 
 - https://www.youtube.com/watch?v=y6XCebnB9gs
