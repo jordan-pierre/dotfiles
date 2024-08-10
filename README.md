@@ -38,6 +38,15 @@ use the adopt flag if the file already exists
 $ stow --adopt .
 ```
 
+
+### VS Code
+
+I manually made a symbolic link for VS Code because it has so many files in its `.config` and I'm only interested in `settings.json`.
+```
+mv ~/.config/Code/User/settings.json ~/dotfiles/.config/Code/User/
+ln -s ~/dotfiles/.config/Code/User/settings.json ~/.config/Code/User/settings.json
+```
+
 ## References
 
 - https://www.youtube.com/watch?v=y6XCebnB9gs
