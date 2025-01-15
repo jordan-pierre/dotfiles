@@ -1,6 +1,10 @@
 {
     "editor.fontFamily": "'JetBrainsMono NFM', 'monospace', monospace",
+    "editor.fontLigatures": true,
     "terminal.integrated.fontFamily": "'JetBrainsMono NFM', 'monospace', monospace",
     "terminal.integrated.fontWeight": "bold",
-    "editor.formatOnSave": true
+    "[cpp]": {
+        "editor.defaultFormatter": "clang-format",
+        "cpp.format.bracePlacement": "sameLine",
+    }
 }
