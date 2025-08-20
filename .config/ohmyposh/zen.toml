@@ -3,12 +3,12 @@ version = 3
 final_space = true
 
 [secondary_prompt]
-  template = '❯❯ '
+  template = '{{ if eq .Env.OMP_VIM_MODE "NORMAL" }}❮❮ {{ else }}❯❯ {{ end }}'
   foreground = 'green'
   background = 'transparent'
 
 [transient_prompt]
-  template = '❯ '
+  template = '{{ if eq .Env.OMP_VIM_MODE "NORMAL" }}❮ {{ else }}❯ {{ end }}'
   background = 'transparent'
   foreground_templates = ['{{if gt .Code 0}}red{{end}}', '{{if eq .Code 0}}green{{end}}']
 
@@ -23,7 +23,6 @@ final_space = true
     background = 'transparent'
     type = 'path'
     style = 'plain'
-
     [blocks.segments.properties]
       cache_duration = 'none'
       style = 'full'
@@ -34,7 +33,6 @@ final_space = true
     background = 'transparent'
     type = 'git'
     style = 'plain'
-
     [blocks.segments.properties]
       branch_icon = ' '
       cache_duration = 'none'
@@ -47,7 +45,6 @@ final_space = true
     background = 'transparent'
     type = 'python'
     style = 'plain'
-
     [blocks.segments.properties]
       cache_duration = 'none'
 
@@ -61,7 +58,6 @@ final_space = true
     background = 'transparent'
     type = 'executiontime'
     style = 'plain'
-
     [blocks.segments.properties]
       cache_duration = 'none'
       threshold = 5000
@@ -72,11 +68,10 @@ final_space = true
   newline = true
 
   [[blocks.segments]]
-    template = '❯'
+    template = '{{ if eq .Env.OMP_VIM_MODE "NORMAL" }}❮{{ else }}❯{{ end }}'
     background = 'transparent'
     type = 'text'
     style = 'plain'
     foreground_templates = ['{{if gt .Code 0}}red{{end}}', '{{if eq .Code 0}}green{{end}}']
-
     [blocks.segments.properties]
       cache_duration = 'none'
