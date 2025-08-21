@@ -4,9 +4,10 @@
   "editor.fontLigatures": true,
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "charliermarsh.ruff",
-  "editor.rulers": [120],
+  "editor.rulers": [
+    120
+  ],
   "editor.renderWhitespace": "boundary",
-
   // Language overrides
   "[python]": {
     "editor.formatOnSave": true,
@@ -31,14 +32,15 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "tamasfe.even-better-toml"
   },
-
   // Linting / Formatting
   "ruff.lineLength": 120,
-
   // Terminal
   "terminal.integrated.fontFamily": "'JetBrainsMono NFM', monospace",
   "terminal.integrated.fontWeight": "bold",
   "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.vimMode": true,
+  "terminal.integrated.cursorStyle": "line",
+  "terminal.integrated.cursorBlinking": true,
   "terminal.integrated.allowedLinkSchemes": [
     "file",
     "http",
@@ -48,21 +50,16 @@
     "vscode-insiders",
     "docker-desktop"
   ],
-
   // Files
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
-
   // Makefile support
   "makefile.configureOnOpen": true,
-
   // Remote
   "remote.autoForwardPortsSource": "hybrid",
-
   // GitHub Copilot
   "github.copilot.nextEditSuggestions.enabled": true,
-
   // HTTP Proxy
   "http.proxyStrictSSL": false
 }

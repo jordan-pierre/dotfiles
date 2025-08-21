@@ -21,7 +21,7 @@ config.window_frame = {
 config.initial_cols = 90
 config.initial_rows = 30
 config.window_padding = {
-  left = 15, 
+  left = 15,
   right = 15,
   top = 15,
   bottom = 15,
@@ -44,5 +44,8 @@ config.use_fancy_tab_bar = false
 config.keys = {
   -- Add your custom key bindings here
 }
+
+-- Vim mode indicators (basic support)
+-- WezTerm automatically shows vim mode in titles when using vi mode
 
 return config

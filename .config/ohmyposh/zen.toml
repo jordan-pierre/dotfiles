@@ -1,77 +1,88 @@
 console_title_template = '{{ .Shell }} in {{ .Folder }}'
 version = 3
 final_space = true
+# Force prompt updates for environment variable changes
+update_env = true
+# Ensure transient prompts work properly
+transient = true
 
 [secondary_prompt]
-  template = '{{ if eq .Env.OMP_VIM_MODE "NORMAL" }}❮❮ {{ else }}❯❯ {{ end }}'
-  foreground = 'green'
-  background = 'transparent'
+template = '❯❯ '
+foreground = 'green'
+background = 'transparent'
 
 [transient_prompt]
-  template = '{{ if eq .Env.OMP_VIM_MODE "NORMAL" }}❮ {{ else }}❯ {{ end }}'
-  background = 'transparent'
-  foreground_templates = ['{{if gt .Code 0}}red{{end}}', '{{if eq .Code 0}}green{{end}}']
+template = '❯ '
+background = 'transparent'
+foreground_templates = [
+  '{{if gt .Code 0}}red{{end}}',
+  '{{if eq .Code 0}}green{{end}}',
+]
 
 [[blocks]]
-  type = 'prompt'
-  alignment = 'left'
-  newline = true
+type = 'prompt'
+alignment = 'left'
+newline = true
 
-  [[blocks.segments]]
-    template = '{{ .Path }}'
-    foreground = 'green'
-    background = 'transparent'
-    type = 'path'
-    style = 'plain'
-    [blocks.segments.properties]
-      cache_duration = 'none'
-      style = 'full'
+[[blocks.segments]]
+template = '{{ .Path }}'
+foreground = 'green'
+background = 'transparent'
+type = 'path'
+style = 'plain'
+[blocks.segments.properties]
+cache_duration = 'none'
+style = 'full'
 
-  [[blocks.segments]]
-    template = ' {{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }}*{{ end }} <cyan>{{ if gt .Behind 0 }}⇣{{ end }}{{ if gt .Ahead 0 }}⇡{{ end }}</>'
-    foreground = 'grey'
-    background = 'transparent'
-    type = 'git'
-    style = 'plain'
-    [blocks.segments.properties]
-      branch_icon = ' '
-      cache_duration = 'none'
-      commit_icon = '@'
-      fetch_status = true
+[[blocks.segments]]
+template = ' {{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }}*{{ end }} <cyan>{{ if gt .Behind 0 }}⇣{{ end }}{{ if gt .Ahead 0 }}⇡{{ end }}</>'
+foreground = 'grey'
+background = 'transparent'
+type = 'git'
+style = 'plain'
+[blocks.segments.properties]
+branch_icon = ' '
+cache_duration = 'none'
+commit_icon = '@'
+fetch_status = true
 
-  [[blocks.segments]]
-    template = ' {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }}'
-    foreground = 'yellow'
-    background = 'transparent'
-    type = 'python'
-    style = 'plain'
-    [blocks.segments.properties]
-      cache_duration = 'none'
-
-[[blocks]]
-  type = 'rprompt'
-  overflow = 'hidden'
-
-  [[blocks.segments]]
-    template = '{{ .FormattedMs }}'
-    foreground = 'yellow'
-    background = 'transparent'
-    type = 'executiontime'
-    style = 'plain'
-    [blocks.segments.properties]
-      cache_duration = 'none'
-      threshold = 5000
+[[blocks.segments]]
+template = '  {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }}'
+foreground = 'yellow'
+background = 'transparent'
+type = 'python'
+style = 'plain'
+[blocks.segments.properties]
+cache_duration = 'none'
 
 [[blocks]]
-  type = 'prompt'
-  alignment = 'left'
-  newline = true
+type = 'rprompt'
+overflow = 'hidden'
 
-  [[blocks.segments]]
-    template = '{{ if eq .Env.OMP_VIM_MODE "NORMAL" }}❮{{ else }}❯{{ end }}'
-    background = 'transparent'
-    type = 'text'
-    style = 'plain'
-    foreground_templates = ['{{if gt .Code 0}}red{{end}}', '{{if eq .Code 0}}green{{end}}']
-    [blocks.segments.properties]
-      cache_duration = 'none'
+[[blocks.segments]]
+template = '{{ .FormattedMs }}'
+foreground = 'yellow'
+background = 'transparent'
+type = 'executiontime'
+style = 'plain'
+[blocks.segments.properties]
+cache_duration = 'none'
+threshold = 5000
+
+
+[[blocks]]
+type = 'prompt'
+alignment = 'left'
+newline = true
+
+[[blocks.segments]]
+template = '❯'
+background = 'transparent'
+type = 'text'
+style = 'plain'
+foreground_templates = [
+  '{{if gt .Code 0}}red{{end}}',
+  '{{if eq .Code 0}}green{{end}}',
+]
+[blocks.segments.properties]
+cache_duration = 'none'
