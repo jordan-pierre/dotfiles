@@ -1,0 +1,67 @@
+# Left: full path (green) + git (cyan) + python (yellow only in real projects) → newline → prompt char
+# Right: command duration (>= 2s)
+format = "$directory$git_branch$git_status$python$line_break$character"
+right_format = "$cmd_duration"
+
+
+add_newline = true
+command_timeout = 500
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vicmd_symbol = "[❮](bold yellow)"
+
+[directory]
+truncation_length = 0
+truncate_to_repo = false
+style = "green"
+
+# --- Git (cyan) ---
+[git_branch]
+symbol = " "
+format = " [$symbol$branch]($style)"
+style = "cyan"
+
+[git_status]
+format = " [${conflicted}${staged}${modified}${untracked}$ahead_behind]($style)"
+style = "cyan"
+conflicted = "!"
+staged = "*"
+modified = "*"
+untracked = "?"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+
+[python]
+# Custom symbol (nerd-font snake works nicely:  )
+symbol = "  "
+format = "[$symbol$version]($style)"
+version_format = "${raw}"
+style = "yellow"
+pyenv_version_name = false
+
+[status]
+disabled = true
+
+[cmd_duration]
+min_time = 2000
+format = "[$duration]($style)"
+style = "yellow"
+show_milliseconds = false
+
+# Quiet the rest
+[package]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[rust]
+disabled = true
+
+[golang]
+disabled = true

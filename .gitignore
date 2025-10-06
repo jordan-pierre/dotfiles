@@ -1,0 +1,27 @@
+# Personal configuration files (machine-specific, not synced)
+.config/shell/personal.env
+.zsh_local_rc
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+*~
+
+# Cache directories
+**/.cache/
+**/cache/
+**/__pycache__/
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# IDE/Editor specific (project-level, not global)
+.vscode/settings.json
+.idea/
+

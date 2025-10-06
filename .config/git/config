@@ -1,0 +1,18 @@
+[core]
+  editor = nvim
+  excludesfile = ~/.config/git/ignore
+
+[pull]
+  rebase = false
+
+[push]
+  default = current
+
+[merge]
+  conflictStyle = diff3
+
+[log]
+  decorate = short
+  abbrevCommit = true
+  date = relative
+

@@ -1,0 +1,30 @@
+general.import = [
+  "~/.config/alacritty/themes/themes/dark_plus.toml"
+]
+
+general.live_config_reload = true
+
+[bell]
+animation = "EaseOutExpo"
+duration = 0
+
+[colors]
+draw_bold_text_with_bright_colors = true
+
+[font.bold]
+family = "JetBrainsMono NFM"
+style = "Bold"
+
+[font.glyph_offset]
+x = 0
+y = 0
+
+[font.italic]
+family = "JetBrainsMono NFM"
+
+[font.normal]
+family = "JetBrainsMono NFM"
+style = "Regular"
+
+[font]
+size = 16

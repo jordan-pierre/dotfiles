@@ -1,0 +1,100 @@
+{
+  // ==========================
+  // Editor Settings
+  // ==========================
+  "editor.fontFamily": "'JetBrainsMono NFM', monospace",
+  "editor.fontLigatures": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "charliermarsh.ruff",
+  "editor.rulers": [120],
+  "editor.renderWhitespace": "boundary",
+
+  // ==========================
+  // Language-Specific Overrides
+  // ==========================
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.organizeImports.ruff": "explicit",
+      "source.fixAll": "explicit"
+    }
+  },
+  "[json]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+  "[yaml]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "[toml]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+  },
+  "[sql]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
+  },
+
+  // ==========================
+  // Terminal Settings
+  // ==========================
+  "terminal.integrated.fontFamily": "'JetBrainsMono NFM', monospace",
+  "terminal.integrated.fontWeight": "bold",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.vimMode": true,
+  "terminal.integrated.cursorStyle": "line",
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.allowedLinkSchemes": [
+    "file",
+    "http",
+    "https",
+    "mailto",
+    "vscode",
+    "vscode-insiders",
+    "docker-desktop"
+  ],
+
+  // ==========================
+  // Language Server Settings (not available as language overrides)
+  // ==========================
+
+  "ruff.lineLength": 120,
+  "Prettier-SQL.SQLFlavourOverride": "snowflake",
+  "Prettier-SQL.tabSizeOverride": 4,
+  "Prettier-SQL.expressionWidth": 120,
+  "Prettier-SQL.newlineBeforeSemicolon": true,
+  "Prettier-SQL.keywordCase": "upper",
+
+  // ==========================
+  // File Settings
+  // ==========================
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+
+  // ==========================
+  // Makefile Support
+  // ==========================
+  "makefile.configureOnOpen": true,
+
+  // ==========================
+  // Remote Settings
+  // ==========================
+  "remote.autoForwardPortsSource": "hybrid",
+
+  // ==========================
+  // GitHub Copilot Settings
+  // ==========================
+  "github.copilot.nextEditSuggestions.enabled": true,
+
+  // ==========================
+  // HTTP Proxy Settings
+  // ==========================
+  "http.proxyStrictSSL": false
+}
+
