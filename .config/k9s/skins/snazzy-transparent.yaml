@@ -9,27 +9,27 @@ k9s:
   body:
     fgColor: "#97979b"
     bgColor: default
-    logoColor: "#5af78e"
+    logoColor: "#5df669"
   prompt:
     fgColor: "#97979b"
     bgColor: default
-    suggestColor: "#5af78e"
+    suggestColor: "#5df669"
   info:
     fgColor: white
-    sectionColor: "#5af78e"
+    sectionColor: "#5df669"
   dialog:
     fgColor: "#97979b"
     bgColor: default
     buttonFgColor: "#97979b"
     buttonBgColor: default
     buttonFocusFgColor: "#97979b"
-    buttonFocusBgColor: "#5af78e"
+    buttonFocusBgColor: "#5df669"
     labelFgColor: "#97979b"
-    fieldFgColor: "#5af78e"
+    fieldFgColor: "#5df669"
   frame:
     border:
-      fgColor: "#5af78e"
-      focusColor: "#5af78e"
+      fgColor: "#5df669"
+      focusColor: "#5df669"
     menu:
       fgColor: white
       keyColor: "#57c7ff"
@@ -40,14 +40,14 @@ k9s:
       activeColor: "#f3f99d"
     status:
       newColor: "#eff0eb"
-      modifyColor: "#5af78e"
+      modifyColor: "#5df669"
       addColor: "#57c7ff"
       errorColor: "#ff5c57"
       highlightColor: "#f3f99d"
       killColor: mediumpurple
       completedColor: gray
     title:
-      fgColor: "#5af78e"
+      fgColor: "#5df669"
       bgColor: default
       highlightColor: white
       counterColor: white
@@ -65,7 +65,7 @@ k9s:
     table:
       fgColor: "#57c7ff"
       bgColor: default
-      cursorColor: "#282a36:#5af78e"
+      cursorColor: "#282a36:#5df669"
       markColor: darkgoldenrod
       header:
         fgColor: white
@@ -74,7 +74,7 @@ k9s:
     xray:
       fgColor: "#57c7ff"
       bgColor: default
-      cursorColor: "#5af78e"
+      cursorColor: "#5df669"
       graphicColor: darkgoldenrod
       showIcons: false
     yaml:
