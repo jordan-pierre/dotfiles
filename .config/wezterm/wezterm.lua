@@ -30,8 +30,11 @@ config.use_fancy_tab_bar = false
 config.default_cursor_style = "BlinkingBar"
 config.cursor_blink_rate = 800
 
--- Key bindings: separate scrolling from cursor movement
+-- Key bindings: separate scrolling from cursor movement, add pane/tab management
 config.keys = {
+  -- ==================
+  -- Scrolling
+  -- ==================
   -- Scroll up/down with Cmd+Arrow keys
   { key = "UpArrow", mods = "CMD", action = wezterm.action.ScrollByLine(-1) },
   { key = "DownArrow", mods = "CMD", action = wezterm.action.ScrollByLine(1) },
@@ -51,6 +54,62 @@ config.keys = {
   { key = "DownArrow", mods = "NONE", action = wezterm.action.SendString("\x1b[B") },
   { key = "RightArrow", mods = "NONE", action = wezterm.action.SendString("\x1b[C") },
   { key = "LeftArrow", mods = "NONE", action = wezterm.action.SendString("\x1b[D") },
+
+  -- ==================
+  -- Tab Management
+  -- ==================
+  -- Create new tab
+  { key = "t", mods = "CMD", action = wezterm.action.SpawnTab("CurrentPaneDomain") },
+  -- Close current tab
+  { key = "w", mods = "CMD", action = wezterm.action.CloseCurrentTab({ confirm = true }) },
+  -- Navigate tabs
+  { key = "[", mods = "CMD", action = wezterm.action.ActivateTabRelative(-1) },
+  { key = "]", mods = "CMD", action = wezterm.action.ActivateTabRelative(1) },
+  { key = "1", mods = "CMD", action = wezterm.action.ActivateTab(0) },
+  { key = "2", mods = "CMD", action = wezterm.action.ActivateTab(1) },
+  { key = "3", mods = "CMD", action = wezterm.action.ActivateTab(2) },
+  { key = "4", mods = "CMD", action = wezterm.action.ActivateTab(3) },
+  { key = "5", mods = "CMD", action = wezterm.action.ActivateTab(4) },
+  { key = "6", mods = "CMD", action = wezterm.action.ActivateTab(5) },
+  { key = "7", mods = "CMD", action = wezterm.action.ActivateTab(6) },
+  { key = "8", mods = "CMD", action = wezterm.action.ActivateTab(7) },
+  { key = "9", mods = "CMD", action = wezterm.action.ActivateTab(8) },
+
+  -- ==================
+  -- Pane Management
+  -- ==================
+  -- Split panes
+  { key = "d", mods = "CMD", action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+  { key = "D", mods = "CMD|SHIFT", action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }) },
+  -- Close current pane
+  { key = "x", mods = "CMD", action = wezterm.action.CloseCurrentPane({ confirm = true }) },
+  -- Navigate panes with vim-style hjkl
+  { key = "h", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Left") },
+  { key = "j", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Down") },
+  { key = "k", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Up") },
+  { key = "l", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Right") },
+  -- Resize panes
+  { key = "H", mods = "CMD|CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Left", 5 }) },
+  { key = "J", mods = "CMD|CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Down", 5 }) },
+  { key = "K", mods = "CMD|CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Up", 5 }) },
+  { key = "L", mods = "CMD|CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Right", 5 }) },
+  -- Toggle pane zoom
+  { key = "z", mods = "CMD", action = wezterm.action.TogglePaneZoomState },
+
+  -- ==================
+  -- Other
+  -- ==================
+  -- Command palette
+  { key = "p", mods = "CMD|SHIFT", action = wezterm.action.ActivateCommandPalette },
+  -- Copy/Paste (ensure they work)
+  { key = "c", mods = "CMD", action = wezterm.action.CopyTo("Clipboard") },
+  { key = "v", mods = "CMD", action = wezterm.action.PasteFrom("Clipboard") },
+  -- Clear scrollback
+  { key = "k", mods = "CMD", action = wezterm.action.ClearScrollback("ScrollbackAndViewport") },
+  -- Search mode
+  { key = "f", mods = "CMD", action = wezterm.action.Search({ CaseSensitiveString = "" }) },
+  -- Reload configuration
+  { key = "r", mods = "CMD|SHIFT", action = wezterm.action.ReloadConfiguration },
 }
 
 return config

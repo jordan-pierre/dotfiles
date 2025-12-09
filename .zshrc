@@ -120,11 +120,26 @@ fi
 # =========================
 # General Aliases
 # =========================
-alias ls='ls --color'
+# Modern CLI replacements
+alias ls='eza --icons --group-directories-first'
+alias ll='eza -l --icons --group-directories-first'
+alias la='eza -la --icons --group-directories-first'
+alias lt='eza --tree --level=2 --icons'
+alias cat='bat --paging=never'
+alias find='fd'
+
+# TUI tool shortcuts
+alias lzd='lazydocker'
+alias lzg='lazygit'
+alias top='btop'
+alias sysinfo='fastfetch'
+
+# Other aliases
 alias vim='nvim'
 alias c='clear'
 alias k='kubectl'
 alias uvr='uv run'
+alias p='cd ~/Projects'
 eval $(thefuck --alias fak)
 
 # =========================
@@ -146,16 +161,16 @@ gh_search() {
         echo "  -o, --org    Search only organization"
         return 1
     fi
-    
+
     local org_flag=""
     local query=""
-    
+
     # Check for --org or -o flag
     if [ "$1" = "--org" ] || [ "$1" = "-o" ]; then
         org_flag="org%3A${GITHUB_ORG}+"
         shift
     fi
-    
+
     query="$*"
     open "https://github.com/search?q=${org_flag}${query// /+}&type=code"
 }
@@ -181,6 +196,24 @@ alias ghso='gh_search --org' # Search only organization
 # =========================
 # Source local machine config (not synced - for machine-specific apps, aliases, etc.)
 [[ -f ~/.zsh_local_rc ]] && source ~/.zsh_local_rc
+
+# =========================
+# Custom Functions
+# =========================
+# Load custom shell functions
+[[ -f ~/.config/shell/functions.zsh ]] && source ~/.config/shell/functions.zsh
+
+# =========================
+# Yazy TUI File Manager
+# =========================
+
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
 
 # =========================
 # Shell Completions
@@ -219,4 +252,3 @@ add-zsh-hook precmd _cursor_precmd
 # =========================
 # TBD...
 # =========================
-

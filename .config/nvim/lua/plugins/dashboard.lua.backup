@@ -1,0 +1,31 @@
+return {
+  {
+    "folke/snacks.nvim",
+    opts = {
+      dashboard = {
+        enabled = true,
+        sections = {
+          { section = "header" },
+          { section = "keys", gap = 1, padding = 1 },
+          { section = "startup" },
+        },
+      },
+    },
+  },
+  -- Apply green colors to dashboard
+  {
+    "LazyVim/LazyVim",
+    opts = function()
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "snacks_dashboard",
+        callback = function()
+          vim.api.nvim_set_hl(0, "SnacksDashboardHeader", { fg = "#00ff00", bg = "NONE", bold = true })
+          vim.api.nvim_set_hl(0, "SnacksDashboardIcon", { fg = "#00ff00", bg = "NONE" })
+          vim.api.nvim_set_hl(0, "SnacksDashboardDesc", { fg = "#00ff00", bg = "NONE" })
+          vim.api.nvim_set_hl(0, "SnacksDashboardKey", { fg = "#00ff00", bg = "NONE", bold = true })
+          vim.api.nvim_set_hl(0, "SnacksDashboardFooter", { fg = "#00ff00", bg = "NONE", italic = true })
+        end,
+      })
+    end,
+  },
+}
