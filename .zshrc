@@ -192,7 +192,7 @@ alias ghs='gh_search'        # Search all of GitHub
 alias ghso='gh_search --org' # Search only organization
 alias ghr='gh browse'
 alias ghrb='gh browse -b "$(git branch --show-current)"'
-alias ghpr='gh pr view --web'
+alias ghrp='gh pr view --web'
 
 # =========================
 # Machine-Specific Configuration
