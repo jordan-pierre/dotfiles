@@ -22,10 +22,65 @@ $env.config.completions = {
     external: {
         enable: true
         max_results: 100
-        completer: null
+        completer: {|spans| carapace $spans.0 nushell ...$spans | from json}
     }
     use_ls_colors: true
 }
+
+# =========================
+# Completion Menu (IDE-style dropdown)
+# =========================
+$env.config.menus = [
+    {
+        name: completion_menu
+        only_buffer_difference: false
+        marker: ""
+        type: {
+            layout: ide
+            min_completion_width: 0
+            max_completion_width: 80
+            max_completion_height: 10
+            padding: 0
+            border: true
+            cursor_offset: 0
+            description_mode: "prefer_right"
+            min_description_width: 20
+        }
+        style: {
+            text: green
+            selected_text: { attr: r }
+            description_text: yellow
+        }
+    }
+]
+
+# =========================
+# Keybindings
+# =========================
+$env.config.keybindings = [
+    # Ctrl+F: fzf directory picker with preview
+    {
+        name: fzf_cd
+        modifier: control
+        keycode: char_f
+        mode: [emacs, vi_insert]
+        event: {
+            send: executehostcommand
+            cmd: "cd (ls | where type == dir | get name | to text | fzf --preview 'ls -la {}' | str trim)"
+        }
+    }
+    # Ctrl+R: fzf-powered history search
+    {
+        name: fzf_history
+        modifier: control
+        keycode: char_r
+        mode: [emacs, vi_insert]
+        event: {
+            send: executehostcommand
+            cmd: "commandline edit --replace (history | get command | reverse | uniq | to text | fzf --height 40% | str trim)"
+        }
+    }
+]
 
 $env.config.cursor_shape = {
     emacs: "blink_line"

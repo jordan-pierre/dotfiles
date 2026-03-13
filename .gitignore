@@ -17,9 +17,6 @@ Thumbs.db
 **/cache/
 **/__pycache__/
 
-# Nushell history (machine-specific)
-.config/nushell/history.sqlite3*
-
 # Local environment files
 .env
 .env.local
