@@ -1,5 +1,6 @@
 # Personal configuration files (machine-specific, not synced)
 .config/shell/personal.env
+.config/shell/personal.nu
 .zsh_local_rc
 
 # OS-specific files
@@ -15,6 +16,9 @@ Thumbs.db
 **/.cache/
 **/cache/
 **/__pycache__/
+
+# Nushell history (machine-specific)
+.config/nushell/history.sqlite3*
 
 # Local environment files
 .env

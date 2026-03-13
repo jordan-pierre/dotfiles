@@ -26,7 +26,10 @@ config.window_background_opacity = 0.95
 config.tab_bar_at_bottom = true
 config.use_fancy_tab_bar = false
 
--- Cursor: start like Neovim Insert (beam). zsh will flip to block in vicmd.
+-- Launch nushell as interactive shell (zsh remains the login/POSIX shell)
+config.default_prog = { "/opt/homebrew/bin/nu" }
+
+-- Cursor: start like Neovim Insert (beam). Nushell vi mode flips to block in normal.
 config.default_cursor_style = "BlinkingBar"
 config.cursor_blink_rate = 800
 
