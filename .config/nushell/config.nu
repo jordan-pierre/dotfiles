@@ -5,6 +5,11 @@ $env.config.show_banner = false
 $env.config.edit_mode = "vi"
 $env.config.buffer_editor = "nvim"
 $env.config.error_style = "fancy"
+$env.config.highlight_resolved_externals = true
+$env.config.color_config.shape_external_resolved = "green_bold"
+$env.config.color_config.shape_external = "red"
+$env.config.color_config.shape_internalcall = "green_bold"
+$env.config.color_config.shape_externalarg = "default"
 
 $env.config.history = {
     max_size: 5000
