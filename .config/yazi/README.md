@@ -1,6 +1,6 @@
 # Yazi config
 
-Theme: cyberdream (see `theme.toml`, `themes/`). Bat theme for code preview: `~/.config/bat/themes/cyberdream.tmTheme`.
+**Theme:** Cyberdream dark/light via **flavors** (auto dark/light by terminal appearance, like WezTerm). `theme.toml` sets `[flavor] dark = "cyberdream"` and `light = "cyberdream-light"`; Yazi detects terminal background at startup and loads the matching flavor from `flavors/`. Code preview in each flavor uses its own `tmtheme.xml` (copied from `~/.config/bat/themes/cyberdream.tmTheme`). Legacy single-theme files: `themes/cyberdream-light.toml` (reference only).
 
 ## Preview pane (right side)
 
@@ -9,7 +9,7 @@ The **right panel** is Yazi’s built-in preview: folder listing, code (bat), an
 **Requirements for preview to work:**
 
 1. **chafa** – `brew install chafa` (image fallback; check `yazi --debug` → Dependencies.chafa).
-2. **bat** – `brew install bat` (code/text preview and `theme.toml` syntect_theme).
+2. **bat** – `brew install bat` (code/text preview; each flavor uses its own `tmtheme.xml` for in-app code highlighting).
 3. **WezTerm env** – In `../wezterm/wezterm.lua`, WezTerm sets `XDG_CONFIG_HOME`, `TERM_PROGRAM=WezTerm`, and `PATH` with `/opt/homebrew/bin` first so Yazi and its subprocesses find `file`, `bat`, and `chafa`. Restart WezTerm after changing that config.
 
 **Toggle panels:** Press **F9** to show/hide the preview (plugin in `plugins/toggle-view.yazi`). F7/F8 toggle parent/current. Or set **ratio** in `yazi.toml` to `[1, 4, 3]` (show) or `[1, 4, 0]` (hide) and restart.
