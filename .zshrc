@@ -1,3 +1,5 @@
+export LS_COLORS="$(vivid generate cyberdream)"
+
 # =========================
 # Load Personal Configuration
 # =========================
