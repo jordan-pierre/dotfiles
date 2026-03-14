@@ -110,10 +110,13 @@ $env.TRANSIENT_PROMPT_COMMAND_RIGHT = {|| "" }
 # Load Init Scripts
 # =========================
 const cache = $nu.cache-dir
+const starship_init = ($cache | path join "starship-init.nu")
+const zoxide_init = ($cache | path join "zoxide-init.nu")
+const carapace_init = ($cache | path join "carapace-init.nu")
 
-source ($cache | path join "starship-init.nu")
-source ($cache | path join "zoxide-init.nu")
-source ($cache | path join "carapace-init.nu")
+if ($starship_init | path exists) { source $starship_init }
+if ($zoxide_init | path exists) { source $zoxide_init }
+if ($carapace_init | path exists) { source $carapace_init }
 
 # =========================
 # CLI Replacement Aliases

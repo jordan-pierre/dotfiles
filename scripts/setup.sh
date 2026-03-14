@@ -133,7 +133,6 @@ if ! command -v stow &> /dev/null; then
             exit 1
         fi
     else
-        # Try different package managers
         if command -v dnf &> /dev/null; then
             sudo dnf install -y stow
         elif command -v apt &> /dev/null; then
@@ -144,6 +143,37 @@ if ! command -v stow &> /dev/null; then
         fi
     fi
 fi
+
+# Install starship, zoxide, carapace if not present (used by nushell)
+install_if_missing() {
+    local cmd=$1
+    local name=$2
+    if command -v "$cmd" &> /dev/null; then
+        return 0
+    fi
+    echo "📦 Installing $name..."
+    if [[ "$OS" == "macos" ]]; then
+        if command -v brew &> /dev/null; then
+            brew install "$cmd"
+        else
+            echo "⚠️  Homebrew not found. Install $name manually: brew install $cmd"
+            return 1
+        fi
+    else
+        if command -v dnf &> /dev/null; then
+            sudo dnf install -y "$cmd"
+        elif command -v apt &> /dev/null; then
+            sudo apt update && sudo apt install -y "$cmd"
+        else
+            echo "⚠️  Install $name manually: https://github.com/search?q=$cmd"
+            return 1
+        fi
+    fi
+}
+
+install_if_missing starship starship || true
+install_if_missing zoxide zoxide || true
+install_if_missing carapace carapace || true
 
 echo ""
 echo "🎉 Setup complete!"
