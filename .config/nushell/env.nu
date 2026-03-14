@@ -27,6 +27,9 @@ $env.PATH = ($env.PATH | uniq)
 # Environment Variables
 # =========================
 $env.XDG_CONFIG_HOME = ($nu.home-dir | path join ".config")
+
+# LS_COLORS via vivid (cyberdream — matches wezterm theme)
+$env.LS_COLORS = (vivid generate cyberdream)
 $env.STARSHIP_CONFIG = ($env.XDG_CONFIG_HOME | path join "starship" "starship.toml")
 $env.VIRTUAL_ENV_DISABLE_PROMPT = "1"
 
