@@ -5,9 +5,40 @@ if wezterm.config_builder then
   config = wezterm.config_builder()
 end
 
--- Colors
--- config.color_scheme = 'Tokyo Night'
-config.colors = require("cyberdream")
+-- Colors: load from colors/*.lua next to this config (single source of truth)
+local colors_dir = wezterm.config_dir .. "/colors"
+config.color_schemes = {
+	["cyberdream"] = dofile(colors_dir .. "/cyberdream.lua"),
+	["cyberdream-light"] = dofile(colors_dir .. "/cyberdream-light.lua"),
+}
+config.color_scheme = "cyberdream"
+
+-- Sync color scheme to macOS system appearance (light/dark)
+local dark_scheme = "cyberdream"
+local light_scheme = "cyberdream-light"
+local function scheme_for_appearance(appearance)
+	if appearance and appearance:find("Dark") then
+		return dark_scheme
+	end
+	return light_scheme
+end
+wezterm.on("window-config-reloaded", function(window, _pane)
+	local appearance = window:get_appearance()
+	local scheme = scheme_for_appearance(appearance)
+	local overrides = window:get_config_overrides() or {}
+	if overrides.color_scheme ~= scheme then
+		overrides.color_scheme = scheme
+		window:set_config_overrides(overrides)
+	end
+end)
+
+-- Toggle light/dark manually (Cmd+Shift+T); next system theme change will sync again
+wezterm.on("toggle-color-scheme", function(window, _pane)
+	local overrides = window:get_config_overrides() or {}
+	local current = overrides.color_scheme or config.color_scheme
+	overrides.color_scheme = (current == light_scheme) and dark_scheme or light_scheme
+	window:set_config_overrides(overrides)
+end)
 
 -- Font
 config.font = wezterm.font("JetBrainsMono Nerd Font")
@@ -102,6 +133,8 @@ config.keys = {
   -- ==================
   -- Other
   -- ==================
+  -- Toggle light/dark color scheme
+  { key = "t", mods = "CMD|SHIFT", action = wezterm.action.EmitEvent("toggle-color-scheme") },
   -- Command palette
   { key = "p", mods = "CMD|SHIFT", action = wezterm.action.ActivateCommandPalette },
   -- Copy/Paste (ensure they work)
