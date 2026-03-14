@@ -114,6 +114,8 @@ const starship_init = ($cache | path join "starship-init.nu")
 const zoxide_init = ($cache | path join "zoxide-init.nu")
 const carapace_init = ($cache | path join "carapace-init.nu")
 
+# Regenerate Starship prompt script in config (after env.nu PATH) so it exists when we source
+try { starship init nu | save -f $starship_init }
 if ($starship_init | path exists) { source $starship_init }
 if ($zoxide_init | path exists) { source $zoxide_init }
 if ($carapace_init | path exists) { source $carapace_init }
@@ -205,17 +207,29 @@ alias ghs = gh_search
 alias ghso = gh_search --org
 
 # =========================
-# Yazi TUI File Manager
+# Yazi TUI File Manager (cwd on exit via --cwd-file)
 # =========================
-def --env y [...args] {
-    let tmp = (mktemp -t "yazi-cwd.XXXXX")
-    yazi ...$args --cwd-file $tmp
-    let cwd = (open $tmp)
-    if $cwd != "" and $cwd != $env.PWD {
-        cd $cwd
+# Accept yazi flags so `y --clear-cache` and `y --help` work (Nushell parses --flags before ...args)
+def --env y [
+    --clear-cache = false
+    --help (-h) = false
+    ...args
+] {
+    if $clear_cache {
+        ^yazi --clear-cache
+    } else if $help {
+        ^yazi --help
+    } else {
+        let tmp = (mktemp -t "yazi-cwd.XXXXX")
+        ^yazi ...$args --cwd-file $tmp
+        let cwd = (open $tmp)
+        if $cwd != "" and $cwd != $env.PWD {
+            cd $cwd
+        }
+        rm -fp $tmp
     }
-    rm -fp $tmp
 }
+alias yazi = y
 
 # =========================
 # Local Machine Config

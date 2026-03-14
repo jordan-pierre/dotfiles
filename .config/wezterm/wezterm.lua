@@ -60,6 +60,19 @@ config.use_fancy_tab_bar = false
 -- Launch nushell as interactive shell (zsh remains the login/POSIX shell)
 config.default_prog = { "/opt/homebrew/bin/nu" }
 
+-- Ensure Nushell uses ~/.config (so it loads ~/.config/nushell; on macOS nu otherwise uses ~/Library/Application Support/nushell)
+-- and Yazi/tools get usable PATH + WezTerm detection
+local path = os.getenv("PATH") or "/usr/bin:/bin:/usr/sbin:/sbin"
+local env = {
+	TERM_PROGRAM = "WezTerm",
+	PATH = "/opt/homebrew/bin:" .. path,
+}
+local home = os.getenv("HOME")
+if home and home ~= "" then
+	env.XDG_CONFIG_HOME = home .. "/.config"
+end
+config.set_environment_variables = env
+
 -- Cursor: start like Neovim Insert (beam). Nushell vi mode flips to block in normal.
 config.default_cursor_style = "BlinkingBar"
 config.cursor_blink_rate = 800
