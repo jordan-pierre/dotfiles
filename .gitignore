@@ -3,6 +3,9 @@
 .config/shell/personal.nu
 .zsh_local_rc
 
+# Fastfetch custom logo (add your own image; avoid committing large binaries)
+.config/fastfetch/logo.png
+
 # OS-specific files
 .DS_Store
 Thumbs.db
