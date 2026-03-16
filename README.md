@@ -56,9 +56,11 @@ stow .
 All configurations are managed by stow and synced across machines:
 
 - **zsh**: Shell configuration with environment-specific conditionals
+- **nushell**: Interactive shell config (config.nu, env.nu); WezTerm launches nushell by default
 - **starship**: Modern shell prompt configuration
 - **git**: Version control settings (user details set by setup script)
 - **wezterm**: Main terminal with cross-platform compatibility
+- **vivid**: LS_COLORS themes (cyberdream, cyberdream-light)
 - **alacritty**: Alternative terminal configuration (fallback option)
 - **k9s**: Kubernetes management tool configuration
 - **vscode**: VS Code editor settings (manually updated when needed)
@@ -119,6 +121,7 @@ fi
 │   └── setup.sh            # Setup script for personal config
 ├── .config/
 │   ├── git/config          # Git configuration
+│   ├── nushell/            # Nushell config (config.nu, env.nu)
 │   ├── starship/           # Starship prompt config
 │   ├── wezterm/            # WezTerm terminal config
 │   ├── alacritty/          # Alacritty terminal config

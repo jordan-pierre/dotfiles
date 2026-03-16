@@ -147,11 +147,15 @@ return {
     },
   },
 
-  -- Telescope configuration
+  -- Telescope (fzf-native optional: add dependency + load extension to get fzf-style sorting)
   {
     "nvim-telescope/telescope.nvim",
-    opts = {
-      defaults = {
+    dependencies = {
+      "nvim-telescope/telescope-fzf-native.nvim",
+      build = "make",
+    },
+    opts = function(_, opts)
+      opts.defaults = vim.tbl_deep_extend("force", opts.defaults or {}, {
         layout_strategy = "horizontal",
         layout_config = {
           prompt_position = "top",
@@ -164,8 +168,12 @@ return {
         sorting_strategy = "ascending",
         winblend = 0,
         file_ignore_patterns = { "node_modules", ".git/", "dist/" },
-      },
-    },
+      })
+      return opts
+    end,
+    config = function()
+      pcall(require("telescope").load_extension, "fzf")
+    end,
   },
 
   -- Better notifications

@@ -1,0 +1,7 @@
+# Yazi theme: auto dark/light by terminal appearance (like WezTerm)
+# Flavors: flavors/cyberdream.yazi, flavors/cyberdream-light.yazi
+#:schema https://yazi-rs.github.io/schemas/theme.json
+
+[flavor]
+dark = "cyberdream"
+light = "cyberdream-light"

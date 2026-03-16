@@ -1,0 +1,5 @@
+# Exclude from stow to avoid conflicts (Perl regex, one per line)
+^\.git
+^\.gitignore$
+^README\.md$
+^scripts

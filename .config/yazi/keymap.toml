@@ -1,0 +1,7 @@
+# Toggle panels: F7/F8/F9 = parent / current / preview (plugin in plugins/toggle-view.yazi)
+[mgr]
+prepend_keymap = [
+    { on = "<F7>", run = "plugin toggle-view -- parent", desc = "Toggle parent" },
+    { on = "<F8>", run = "plugin toggle-view -- current", desc = "Toggle current" },
+    { on = "<F9>", run = "plugin toggle-view -- preview", desc = "Toggle preview" },
+]

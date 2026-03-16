@@ -89,8 +89,7 @@ return {
             },
           },
         },
-        -- TypeScript/JavaScript
-        ts_ls = {},
+        -- TypeScript/JavaScript: use LazyVim extra (lang.typescript) → vtsls + typescript.nvim
         -- JSON
         jsonls = {},
         -- YAML
@@ -117,10 +116,10 @@ return {
         "flake8",
         "eslint_d",
         "yamllint",
-        -- LSP servers
+        -- LSP servers (vtsls used by extras.lang.typescript)
         "pyright",
         "lua-language-server",
-        "typescript-language-server",
+        "vtsls",
         "json-lsp",
         "yaml-language-server",
         "bash-language-server",

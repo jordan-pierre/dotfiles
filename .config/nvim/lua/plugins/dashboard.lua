@@ -52,30 +52,30 @@ return {
     config = function(_, opts)
       require("snacks").setup(opts)
   
-      -- Everblush-ish styling: transparent bg, bright-green icons, yellow keys
-      local green_bright = "#5df669" -- icon green
-      local yellow       = "#e5c76b" -- key hint yellow
-      local text_green   = "#8ccf7e" -- general text
+      -- Cyberdream-style: transparent bg, neon green icons, yellow keys (matches WezTerm)
+      local green_bright = "#5eff6c" -- cyberdream green
+      local yellow       = "#f1ff5e" -- cyberdream yellow
+      local text_fg      = "#ffffff" -- cyberdream fg
   
       -- Transparent background
       vim.api.nvim_set_hl(0, "Normal",      { bg = "NONE" })
       vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
-      vim.api.nvim_set_hl(0, "FloatBorder", { fg = text_green, bg = "NONE" })
+      vim.api.nvim_set_hl(0, "FloatBorder", { fg = text_fg, bg = "NONE" })
   
       vim.api.nvim_create_autocmd("ColorScheme", {
         callback = function()
           vim.api.nvim_set_hl(0, "Normal",      { bg = "NONE" })
           vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
-          vim.api.nvim_set_hl(0, "FloatBorder", { fg = text_green, bg = "NONE" })
+          vim.api.nvim_set_hl(0, "FloatBorder", { fg = text_fg, bg = "NONE" })
         end,
       })
   
-      -- Dashboard text + icons
-      vim.api.nvim_set_hl(0, "SnacksDashboard",       { fg = text_green, bg = "NONE" })
-      vim.api.nvim_set_hl(0, "SnacksDashboardHeader", { fg = text_green, bg = "NONE" })
-      vim.api.nvim_set_hl(0, "SnacksDashboardFooter", { fg = text_green, bg = "NONE" })
-      vim.api.nvim_set_hl(0, "SnacksDashboardDesc",   { fg = text_green, bg = "NONE" })
-      vim.api.nvim_set_hl(0, "SnacksDashboardTitle",  { fg = text_green, bg = "NONE" })
+      -- Dashboard text + icons (cyberdream palette)
+      vim.api.nvim_set_hl(0, "SnacksDashboard",       { fg = text_fg, bg = "NONE" })
+      vim.api.nvim_set_hl(0, "SnacksDashboardHeader", { fg = text_fg, bg = "NONE" })
+      vim.api.nvim_set_hl(0, "SnacksDashboardFooter", { fg = text_fg, bg = "NONE" })
+      vim.api.nvim_set_hl(0, "SnacksDashboardDesc",   { fg = text_fg, bg = "NONE" })
+      vim.api.nvim_set_hl(0, "SnacksDashboardTitle",  { fg = text_fg, bg = "NONE" })
       vim.api.nvim_set_hl(0, "SnacksDashboardIcon",   { fg = green_bright, bg = "NONE", bold = true })
       vim.api.nvim_set_hl(0, "SnacksDashboardKey",    { fg = yellow, bg = "NONE", bold = true })
     end,
