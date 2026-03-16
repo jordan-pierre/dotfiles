@@ -16,7 +16,7 @@ The **right panel** is Yazi’s built-in preview: folder listing, code (bat), an
 
 ## Config notes (yazi.toml)
 
-- **Fetchers:** Do **not** override `[plugin] fetchers`. Use Yazi’s default so the built-in **mime** fetcher runs. Overriding with a custom `fetchers = [...]` caused “No mime fetcher” and broke image (and mime-based) previews.
+- **Fetchers:** Do **not** override `[plugin] fetchers`. Use Yazi’s default so the built-in **mime** fetcher runs.
 - **Spotters / previewers:** Use **`url`** for path/glob rules, not `name`. For example: `{ url = "*/", run = "folder" }` for directories, `{ url = "*", run = "file" }` for fallback. The docs use `url` and `mime`; `name` is not the correct key here.
 
 ## If preview is empty again

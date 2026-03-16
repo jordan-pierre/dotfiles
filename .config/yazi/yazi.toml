@@ -87,8 +87,7 @@ image_bound      = [ 5000, 5000 ]
 suppress_preload = false
 
 [plugin]
-# Do not override fetchers: use Yazi's default (includes mime fetcher). Custom fetchers = [...] was
-# replacing defaults and caused "No mime fetcher" → no preview for images/folders.
+# Do not override fetchers: use Yazi's default (includes mime fetcher).
 spotters = [
 	{ url = "*/", run = "folder" },
 	# Code
