@@ -13,6 +13,23 @@ config.color_schemes = {
 }
 config.color_scheme = "cyberdream"
 
+-- Tab bar colors: active tab stands out in both light and dark mode
+local function tab_bar_colors_for_scheme(scheme_name)
+	local scheme = (scheme_name == "cyberdream-light")
+		and dofile(colors_dir .. "/cyberdream-light.lua")
+		or dofile(colors_dir .. "/cyberdream.lua")
+	-- Use selection_bg for active tab so it's clearly distinct from inactive tabs
+	local active_bg = scheme.selection_bg or scheme.background
+	return {
+		background = scheme.background,
+		active_tab = { bg_color = active_bg, fg_color = scheme.foreground },
+		inactive_tab = { bg_color = scheme.background, fg_color = scheme.foreground },
+		inactive_tab_hover = { bg_color = active_bg, fg_color = scheme.foreground },
+		new_tab = { bg_color = scheme.background, fg_color = scheme.foreground },
+	}
+end
+config.colors = { tab_bar = tab_bar_colors_for_scheme("cyberdream") }
+
 -- Sync color scheme to macOS system appearance (light/dark)
 local dark_scheme = "cyberdream"
 local light_scheme = "cyberdream-light"
@@ -28,6 +45,7 @@ wezterm.on("window-config-reloaded", function(window, _pane)
 	local overrides = window:get_config_overrides() or {}
 	if overrides.color_scheme ~= scheme then
 		overrides.color_scheme = scheme
+		overrides.colors = { tab_bar = tab_bar_colors_for_scheme(scheme) }
 		window:set_config_overrides(overrides)
 	end
 end)
@@ -36,7 +54,9 @@ end)
 wezterm.on("toggle-color-scheme", function(window, _pane)
 	local overrides = window:get_config_overrides() or {}
 	local current = overrides.color_scheme or config.color_scheme
-	overrides.color_scheme = (current == light_scheme) and dark_scheme or light_scheme
+	local next_scheme = (current == light_scheme) and dark_scheme or light_scheme
+	overrides.color_scheme = next_scheme
+	overrides.colors = { tab_bar = tab_bar_colors_for_scheme(next_scheme) }
 	window:set_config_overrides(overrides)
 end)
 
@@ -57,8 +77,16 @@ config.window_background_opacity = 0.95
 config.tab_bar_at_bottom = true
 config.use_fancy_tab_bar = false
 
--- Launch nushell as interactive shell (zsh remains the login/POSIX shell)
-config.default_prog = { "/opt/homebrew/bin/nu" }
+
+-- Interactive shell: CHOOSE ONE:
+-- =========================
+-- A: Launch nushell as interactive shell (zsh remains the login/POSIX shell)
+-- config.default_prog = { "/opt/homebrew/bin/nu" }
+-- =========================
+-- B: Launch zsh as interactive shell
+config.default_prog = { "/bin/zsh" }
+-- =========================
+
 
 -- Ensure Nushell uses ~/.config (so it loads ~/.config/nushell; on macOS nu otherwise uses ~/Library/Application Support/nushell)
 -- and Yazi/tools get usable PATH + WezTerm detection
