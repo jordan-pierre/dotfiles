@@ -242,3 +242,30 @@ serve() {
   python3 -m http.server "$port"
 }
 
+# macOS: caffeinate wrappers (requires IS_MACOS, see setup / personal.env)
+# =========================
+if [[ "$IS_MACOS" == "true" ]]; then
+  caff() {
+    caffeinate -d -i "$@"
+  }
+
+  _caff() {
+    (( CURRENT > 1 )) || return
+    words=(${words[@]:1})
+    (( CURRENT-- ))
+    _normal
+  }
+  compdef _caff caff
+
+  # Attach idle/display wake assertion to the newest process matching a pattern
+  caffp() {
+    if [[ $# -lt 1 ]]; then
+      echo "Usage: caffp <pgrep pattern>"
+      return 1
+    fi
+    local pid
+    pid=$(pgrep -n -f "$1") || return 1
+    caffeinate -d -i -w "$pid"
+  }
+fi
+
