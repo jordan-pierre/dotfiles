@@ -26,7 +26,7 @@ opt.hlsearch = true
 -- Cursor line
 opt.cursorline = true
 
--- Appearance
+-- Appearance (background set by theme sync in autocmds when on macOS)
 opt.termguicolors = true
 opt.background = "dark"
 opt.signcolumn = "yes"

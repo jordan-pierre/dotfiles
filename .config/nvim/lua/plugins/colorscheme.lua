@@ -3,11 +3,21 @@ return {
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "tokyonight", -- fallback; cyberdream plugin sets cyberdream after load
+      colorscheme = "tokyonight", -- fallback; theme sync or cyberdream sets actual scheme
     },
   },
 
-  -- Cyberdream: transparent, high-contrast, matches WezTerm cyberdream theme
+  -- GitHub theme: light/dark variants for system-appearance sync (light mode must be readable)
+  {
+    "projekt0n/github-nvim-theme",
+    lazy = false,
+    priority = 1001, -- load with colorscheme plugins so github_light is available for sync
+    config = function()
+      require("github-theme").setup({})
+    end,
+  },
+
+  -- Cyberdream: transparent, high-contrast, matches WezTerm cyberdream theme (dark)
   {
     "scottmckendry/cyberdream.nvim",
     lazy = false,
@@ -36,6 +46,7 @@ return {
           trouble = true,
         },
       })
+      -- Theme sync (autocmds) will set light/dark; default to dark here
       pcall(vim.cmd.colorscheme, "cyberdream")
     end,
   },
