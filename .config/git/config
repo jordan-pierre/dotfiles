@@ -5,6 +5,9 @@
 [pull]
   rebase = false
 
+[fetch]
+  prune = true
+
 [push]
   default = current
 
