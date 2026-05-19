@@ -169,6 +169,10 @@ gh_search() {
 
     # Check for --org or -o flag
     if [ "$1" = "--org" ] || [ "$1" = "-o" ]; then
+        if [[ -z "${GITHUB_ORG:-}" ]]; then
+            echo "ghso (org search): GITHUB_ORG is required. Set it via ./scripts/setup.sh, ~/.config/shell/personal.env, or: export GITHUB_ORG=your-org"
+            return 1
+        fi
         org_flag="org%3A${GITHUB_ORG}+"
         shift
     fi
