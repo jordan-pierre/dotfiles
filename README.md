@@ -15,17 +15,21 @@ A cross-platform dotfile management setup using [GNU Stow](https://www.gnu.org/s
 
 ### Automated Setup (Recommended)
 
+**Prerequisites:** **macOS** — [Homebrew](https://brew.sh/) for installs the script runs. **Linux** — `sudo` and **dnf** (Fedora-family) or **apt** (Debian/Ubuntu); the script does **not** use Homebrew on Linux.
+
 ```bash
 # Clone the repository
 git clone https://github.com/jordan-pierre/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# Run setup script (detects OS, prompts for details, installs stow)
+# Run setup script (OS detection, interactive prompts, installs deps — see below)
 ./scripts/setup.sh
 
 # Create symlinks
 stow .
 ```
+
+Setup asks for **machine type**, **git/email/AWS**, **shell** (default **zsh** or **Nushell** on top of zsh), optional **vivid**, **fzf**, and related CLI tools, **Nerd Font**, and **primary terminal** (**WezTerm** default vs **Other / OS Default**). **Homebrew** is used on macOS; **dnf/apt** on Linux (no Homebrew there). See [Setting Up New Machines](#setting-up-new-machines) for the full list.
 
 ### Manual Setup
 
@@ -56,23 +60,25 @@ stow .
 All configurations are managed by stow and synced across machines:
 
 - **zsh**: Shell configuration with environment-specific conditionals
-- **nushell**: Interactive shell config (config.nu, env.nu); WezTerm launches nushell by default
+- **nushell**: Interactive shell config (config.nu, env.nu); optional via `./scripts/setup.sh` (default setup is **zsh**; **Nushell** adds `personal.nu` + tooling). **WezTerm** launches **nu** only when you choose Nushell **and** WezTerm (via `~/.config/wezterm/local.lua`); otherwise the repo defaults to **zsh**
 - **starship**: Modern shell prompt configuration
 - **git**: Version control settings (user details set by setup script)
 - **wezterm**: Main terminal with cross-platform compatibility
 - **vivid**: LS_COLORS themes (cyberdream, cyberdream-light)
-- **alacritty**: Alternative terminal configuration (fallback option)
+- **alacritty**: Alternative terminal configuration — adjust `font.*.family` manually if you use it (setup does not drive Alacritty prompts)
 - **k9s**: Kubernetes management tool configuration
 - **vscode**: VS Code editor settings (manually updated when needed)
 - **nvim**: Neovim editor configuration
 
 ### Personal Configuration (Not Synced)
 
-Machine-specific details are stored in `~/.config/shell/personal.env`:
+Machine-specific details are stored in `~/.config/shell/personal.env`. If you chose **Nushell** during setup, `~/.config/shell/personal.nu` is also created.
+
+**personal.env** holds:
 - `IS_WORK` - Work vs personal machine flag
 - `IS_MACOS` - macOS vs Linux detection
-- `GITHUB_ORG` - Your GitHub organization
-- `GIT_EMAIL` - Your git commit email
+- `GITHUB_ORG` - Your GitHub organization (may be empty; **`gh_search --org`** / **`ghso`** requires it — set via setup or `export`)
+- `GIT_EMAIL` - Your git commit email (may be empty; set a real address before committing; **`None`** in setup clears global **`user.email`**)
 - `AWS_PROFILE` - Your AWS default profile
 - `NAME` - Your full name
 
@@ -83,6 +89,8 @@ Machine-specific items are kept in `~/.zsh_local_rc`:
 - Machine-specific aliases and paths
 - Experimental configurations
 - Temporary tools and shortcuts
+
+Re-running **`./scripts/setup.sh`** does **not** overwrite **`~/.zsh_local_rc`** if it is already non-empty; delete or truncate the file first if you want the setup template re-created.
 
 ## How It Works
 
@@ -130,9 +138,11 @@ fi
 │   └── nvim/               # Neovim configuration
 └── README.md               # This file
 
-# Untracked files (created by setup script)
-~/.config/shell/personal.env  # Personal details
-~/.zsh_local_rc              # Machine-specific config
+# Untracked files (created / managed locally)
+~/.config/shell/personal.env   # Personal details (always)
+~/.config/shell/personal.nu    # Nushell secrets mirror (only if you chose Nushell in setup)
+~/.config/wezterm/local.lua    # Font + optional default_prog when setup chooses WezTerm as primary
+~/.zsh_local_rc               # Machine-specific config
 ```
 
 ## Daily Usage
@@ -318,12 +328,13 @@ git checkout .              # Restore your dotfiles version (if needed)
 
 The setup script will:
 - Detect your OS (macOS/Linux)
-- Install stow if not present
-- Prompt for machine type (work/personal)
-- Ask for your GitHub org, git email, and AWS profile
-- Generate `~/.config/shell/personal.env` with your details
-- Create `~/.zsh_local_rc` for machine-specific items
-- Configure git with your name and email
+- Prompt for machine type (work/personal) and identity (name, **GitHub org**, **git email**, AWS profile). **GitHub org** defaults from **`GITHUB_ORG`** in your environment, then from **`~/.config/shell/personal.env`** if unset; the prompt shows **`[YourOrg]`** or **`[None]`**. Press **Enter** to keep the current value; type **`None`** (any case) to clear it. **Git email** uses the same pattern: **`GIT_EMAIL`**, then **`git config --global user.email`**, then **`personal.env`**; **`[None]`** / **`None`** clear and remove global **`user.email`**.
+- Ask for **interactive shell**: **zsh only** (default) or **Nushell** (adds `personal.nu`, nushell dirs, **carapace**, **nushell** install — **zsh** is still fully configured)
+- Optionally install **vivid**, **fzf**, and related tools (macOS: Homebrew; Linux: **dnf/apt** with mapped package names). **Enter** accepts the default (**yes**).
+- Let you pick a **Nerd Font** (branch/Python icons in Starship need it); macOS installs font **casks** when possible
+- Ask for **primary terminal**: **WezTerm** (default; installs WezTerm if missing; writes **`~/.config/wezterm/local.lua`** for font + optional **`nu`**) vs **Other / OS Default** (echo-only font hints; no `local.lua`; on macOS use Terminal.app or another terminal and set the font yourself)
+- Install **stow**, **starship**, **zoxide** (always); **`carapace`** / **`nu`** only if Nushell was chosen
+- Generate **`~/.config/shell/personal.env`**, optionally **`personal.nu`**, and **`~/.zsh_local_rc`** only when that file is **missing or empty** (reruns **preserve** a non-empty **`~/.zsh_local_rc`**), configure **git**, and print **post-setup** notes (icons, fonts, `stow .`)
 
 ## Customization
 
@@ -347,8 +358,8 @@ Available in shell configurations (sourced from `~/.config/shell/personal.env`):
 
 - `$IS_WORK` - "true" for work machines, "false" for personal
 - `$IS_MACOS` - "true" on macOS, "false" on Linux  
-- `$GITHUB_ORG` - Your GitHub organization
-- `$GIT_EMAIL` - Your git commit email
+- `$GITHUB_ORG` - Your GitHub organization (may be empty; **`gh_search --org`** needs it set)
+- `$GIT_EMAIL` - Your git commit email (may be empty)
 - `$AWS_PROFILE` - Your AWS default profile (if set)
 - `$NAME` - Your full name
 
@@ -379,6 +390,7 @@ fi
 
 The following files are automatically excluded from git:
 - `~/.config/shell/personal.env` - Personal details and machine type
+- `~/.config/shell/personal.nu` - Nushell personal vars (when used)
 - `~/.zsh_local_rc` - Machine-specific configurations
 - OS-specific files (`.DS_Store`, etc.)
 - Cache and temporary files
@@ -394,7 +406,7 @@ The following files are automatically excluded from git:
 ### Setup Issues
 
 ```bash
-# Re-run setup if needed
+# Re-run setup if needed (safe for fonts/WezTerm; preserves non-empty ~/.zsh_local_rc)
 ./scripts/setup.sh
 
 # Check if personal config exists
