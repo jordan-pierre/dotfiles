@@ -1,0 +1,26 @@
+// Place your key bindings in this file to override the defaults
+[
+    {
+      "key": "cmd+y",
+      "command": "cursorRedo"
+    },
+    {
+      "key": "cmd+i",
+      "command": "composerMode.agent"
+    },
+    {
+      "key": "shift+cmd+b",
+      "command": "workbench.action.toggleAuxiliaryBar",
+      "when": "!auxiliaryBarVisible"
+    },
+    {
+      "key": "shift+cmd+b",
+      "command": "workbench.action.focusAuxiliaryBar",
+      "when": "auxiliaryBarVisible && !auxiliaryBarFocus"
+    },
+    {
+      "key": "shift+cmd+b",
+      "command": "workbench.action.toggleAuxiliaryBar",
+      "when": "auxiliaryBarVisible && auxiliaryBarFocus"
+    }
+  ]
