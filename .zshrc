@@ -102,11 +102,6 @@ else
     export PATH="/usr/local/bin:$PATH"
 fi
 
-if [[ -n "$AWS_PROFILE" ]]; then
-    # AWS configuration
-    export AWS_DEFAULT_PROFILE="$AWS_PROFILE"
-fi
-
 export PATH
 
 # =========================
