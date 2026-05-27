@@ -1,0 +1,96 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      "ctrl ctrl": "file_finder::Toggle",
+      // Task definiert in tasks.json und ~/.config/zed/custom_runfile.sh
+      "cmd-r": ["task::Spawn", { "task_name": "run file" }],
+      "cmd-k": "editor::ToggleFocus",
+      "cmd-j": "terminal_panel::Toggle",
+      "cmd-u": "workspace::ToggleBottomDock"
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "cmd-k": "editor::ToggleFocus",
+      "cmd-h": "workspace::ActivatePaneLeft",
+      "cmd-l": "workspace::ActivatePaneRight"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      "j k": "vim::NormalBefore",
+      "j j": "vim::SwitchToNormalMode",
+      "v v": "vim::SwitchToVisualMode"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == visual && !VimWaiting && !menu",
+    "bindings": {
+      "/ /": "editor::ToggleComments",
+      "tab": "editor::Tab",
+      "shift-tab": "editor::Backtab",
+      "shift-k": "editor::MoveLineUp",
+      "shift-j": "editor::MoveLineDown",
+      "s": "vim::PushAddSurrounds"
+    }
+  },
+  {
+    "context": "VimControl && !menu",
+    "bindings": {
+      "/ /": ["editor::ToggleComments", { "advance_downwards": false }],
+      "g s": "outline::Toggle",
+      "g d": "editor::GoToDefinition",
+      "g D": "editor::GoToDefinitionSplit"
+    }
+  },
+  {
+    "context": "Editor && VimControl && !VimWaiting && !menu",
+    "bindings": {
+      "g n": "vim::SelectNext",
+      "g N": "vim::SelectPrevious",
+      "g o": "editor::NewlineBelow",
+      "g O": "editor::NewlineAbove",
+      "g a": "editor::SelectAllMatches",
+      "g shift-a": "editor::FindAllReferences",
+      "g S": "project_symbols::Toggle"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == normal && !VimWaiting && !menu",
+    "bindings": {
+      "space e": "editor::Hover"
+    }
+  },
+  {
+    "context": "Editor && (vim_mode == normal || vim_mode == visual) && !VimWaiting && !menu",
+    "bindings": {
+      "space m p": "markdown::OpenPreviewToTheSide", // funktioniert noch nicht
+      // Git
+      "space g d": "editor::ExpandAllDiffHunks",
+      "space g r": "git::Restore"
+    }
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "cmd-/": [
+        "editor::ToggleComments",
+        {
+          "advance_downwards": false
+        }
+      ],
+      "cmd-h": "workspace::ActivatePaneLeft",
+      "cmd-l": "workspace::ActivatePaneRight"
+    }
+  }
+]

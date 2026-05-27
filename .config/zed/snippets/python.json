@@ -1,0 +1,185 @@
+{
+  "Create __name__==__main__": {
+    "prefix": "main",
+    "description": "main function template",
+    "body": [
+      "def main() -> None:",
+      "    ${1:...}",
+      "",
+      "",
+      "if __name__=='__main__':",
+      "    main()",
+      ""
+    ]
+  },
+  "Create a class": {
+    "prefix": "class",
+    "description": "Class template",
+    "body": [
+      "class ${1:...}:",
+      "    def __init__(self, ${2:args}) -> None:",
+      "        ${3:...}"
+    ]
+  },
+  "Class method instance": {
+    "prefix": "method",
+    "description": "Method template inside a class",
+    "body": [
+      "def ${1:func}(self, ${2:args}) -> ${3:return_type}:",
+      "    ${4:...}"
+    ]
+  },
+  "Default function": {
+    "prefix": "def",
+    "description": "Function template",
+    "body": ["def ${1:func}(${2:args}) -> ${3:return_type}:", "    ${4:...}"]
+  },
+  "Try/Except Block": {
+    "prefix": "try",
+    "description": "Try/except block template",
+    "body": [
+      "try:",
+      "    ${1:...}",
+      "except ${2:Exception} as ${3:e}:",
+      "    ${4:...}",
+      "$0"
+    ]
+  },
+  "For loop": {
+    "prefix": "for",
+    "description": "For loop template",
+    "body": ["for ${1:...} in ${2:...}:", "    ${3:...}"]
+  },
+  "List comprehension": {
+    "prefix": "lc",
+    "description": "List comprehension pattern",
+    "body": ["[${1:...} for ${2:...} in ${3:...}]"]
+  },
+  "Dict comprehension": {
+    "prefix": "dc",
+    "description": "Dictionary comprehension",
+    "body": ["{${1:k}: ${2:v} for ${3:k}, ${4:v} in ${5:...}}"]
+  },
+  "With open read": {
+    "prefix": "open",
+    "description": "Read from file using with open",
+    "body": [
+      "with open('${1:...}', 'r') as ${2:f}:",
+      "    ${3:data} = ${2:f}.read()",
+      "    ${4:...}"
+    ]
+  },
+  "Import module": {
+    "prefix": "import",
+    "description": "Import module",
+    "body": ["import ${1:...}"]
+  },
+  "From module import": {
+    "prefix": "from",
+    "description": "Import module",
+    "body": ["from ${1:...} import ${2:...}"]
+  },
+  "Property": {
+    "prefix": "property",
+    "description": "Property getter",
+    "body": [
+      "@property",
+      "def ${1:func}(self) -> ${2:return_type}:",
+      "    ${3:...}"
+    ]
+  },
+  "Classmethod": {
+    "prefix": "cls",
+    "description": "Classmethod",
+    "body": [
+      "from typing import Self",
+      "",
+      "@classmethod",
+      "def ${1:func}(cls, ${2:args}) -> Self:",
+      "    ${3:...}"
+    ]
+  },
+  "Staticmethod": {
+    "prefix": "static",
+    "description": "Staticmethod",
+    "body": [
+      "@staticmethod",
+      "def ${1:func}(${2:args}) -> ${3:return_type}:",
+      "    ${4:...}"
+    ]
+  },
+  "Async function": {
+    "prefix": "async",
+    "description": "Async function",
+    "body": [
+      "async def ${1:func}(${2:args}) -> ${3:return_type}:",
+      "    ${4:...}"
+    ]
+  },
+  "Await": {
+    "prefix": "await",
+    "description": "Await",
+    "body": ["await ${1:...}"]
+  },
+  "Print statement": {
+    "prefix": "print",
+    "description": "Print statement",
+    "body": "print(${1:\"msg\"})"
+  },
+  "Pydantic BaseModel": {
+    "prefix": "basemodel",
+    "description": "Pydantic BaseModel",
+    "body": [
+      "from pydantic import BaseModel",
+      "",
+      "class ${1:MyModel}(BaseModel):",
+      "    ${2:field_name}: ${3:type}"
+    ]
+  },
+  "Pydantic field validator": {
+    "prefix": "field_validator",
+    "description": "Pydantic field validator",
+    "body": [
+      "from pydantic import field_validator",
+      "",
+      "@field_validator('${1:field_name}', mode='${2:after}')",
+      "def validate_${1:field_name}(cls, ${3:v}:${4:type}) -> ${5:field_type}:",
+      "    ${6:...}",
+      "    return ${3:v}"
+    ]
+  },
+  "Pydantic model validator": {
+    "prefix": "model_validator",
+    "description": "Pydantic model validator",
+    "body": [
+      "from pydantic import model_validator",
+      "from typing import Self",
+      "",
+      "@model_validator(mode='${1:after}')",
+      "def validate_${2:...}(self) -> Self:",
+      "    ${3:...}",
+      "    return self"
+    ]
+  },
+  "Dataclass": {
+    "prefix": "dataclass",
+    "description": "Python dataclass",
+    "body": [
+      "from dataclasses import dataclass",
+      "",
+      "@dataclass",
+      "class ${1:...}:",
+      "    ${2:field_name}: ${3:type}"
+    ]
+  },
+  "TypedDict": {
+    "prefix": "typeddict",
+    "description": "TypedDict definition",
+    "body": [
+      "from typing import TypedDict",
+      "",
+      "class ${1:...}(TypedDict):",
+      "    ${2:key}: ${3:type}"
+    ]
+  }
+}
