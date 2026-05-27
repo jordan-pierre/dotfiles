@@ -1,0 +1,190 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "agent_servers": {
+    "claude-acp": {
+      "type": "registry",
+    },
+  },
+  "auto_update": false,
+  "edit_predictions": {
+    "provider": "zed",
+  },
+  "jupyter": {
+    "enabled": true,
+  },
+  "vim_mode": true,
+  "vim": {
+    "toggle_relative_line_numbers": true,
+    "use_system_clipboard": "on_yank",
+  },
+  "agent": {
+    "default_model": {
+      "provider": "ollama",
+      "model": "gpt-oss:20b",
+    },
+    "model_parameters": [],
+  },
+  "ssh_connections": [
+    {
+      "host": "HomeServer",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/home/sam"
+          ]
+        },
+        {
+          "paths": [
+            "/home/sam/repos/gitops-demo"
+          ]
+        }
+      ],
+      "port_forwards": [
+        {
+          "local_port": 8080,
+          "remote_port": 8080
+        },
+        {
+          "local_port": 3000,
+          "remote_port": 3000
+        }
+      ]
+    },
+    {
+      "host": "BarmiDev",
+      "args": [],
+      "projects": []
+    }
+  ],
+  "icon_theme": "Material Icon Theme",
+  "ui_font_size": 16,
+  "buffer_font_size": 16,
+  "buffer_font_family": "JetBrainsMonoNL Nerd Font",
+  "theme": {
+    "mode": "system",
+    "light": "Nightrider",
+    "dark": "One Dark",
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false,
+  },
+  "file_scan_exclusions": [
+    "**/.svn",
+    "**/.hg",
+    "**/.jj",
+    "**/CVS",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.classpath",
+    "**/.settings",
+    "**/__pycache__",
+  ],
+  "snippet_sort_order": "top",
+  "buffer_font_features": {
+    "calt": false,
+  },
+  "tabs": { "file_icons": true },
+  "git": { "inline_blame": { "enabled": false } },
+  "autosave": "on_focus_change",
+  "show_edit_predictions": false,
+  "show_completions_on_input": true,
+  "languages": {
+    "Python": {
+      "language_servers": ["basedpyright", "ruff"],
+      "format_on_save": "on",
+      "formatter": [
+        {
+          "code_action": "source.organizeImports.ruff",
+        },
+        {
+          "code_action": "source.fixAll.ruff",
+        },
+        {
+          "language_server": {
+            "name": "ruff",
+          },
+        },
+      ],
+    },
+    "Zig": {
+      // Formatting with ZLS matches `zig fmt`.
+      // The Zig FAQ answers some questions about `zig fmt`:
+      // https://github.com/ziglang/zig/wiki/FAQ
+      "formatter": "language_server",
+      "format_on_save": "on",
+      // Make sure that zls is the primary language server
+      "language_servers": ["zls", "..."],
+      "code_actions_on_format": {
+        // Run code actions that currently supports adding and removing discards.
+        // "source.fixAll": true,
+        // Run code actions that sorts @import declarations.
+        // "source.organizeImports": true,
+      },
+    },
+    "SQL": {
+      "formatter": {
+        "external": {
+          "command": "sql-formatter",
+          "arguments": ["--language", "mysql"],
+        },
+      },
+    },
+  },
+  "lsp": {
+    "pyright": {
+      "settings": {
+        "python.analysis": {
+          "diagnosticMode": "workspace",
+          // "typeCheckingMode": "strict"
+        },
+        "python": {
+          "pythonPath": ".venv/bin/python",
+        },
+      },
+    },
+    "basedpyright": {
+      "settings": {
+        "basedpyright.analysis": {
+          "diagnosticMode": "workspace",
+          // "typeCheckingMode": "strict"
+        },
+        "python": {
+          "pythonPath": ".venv/bin/python",
+        },
+      },
+    },
+    "ty": {
+      "settings": {
+        "diagnosticMode": "workspace",
+        "disableLanguageServices": false,
+        "experimental": {
+          "autoImport": true,
+        },
+      },
+    },
+    "ruff": {
+      "initialization_options": {
+        "settings": {
+          "lineLength": 110,
+          "showSyntaxErrors": true,
+          "lint": {
+            // "extendSelect": ["I"],
+            "unfixable": ["F401"],
+          },
+        },
+      },
+    },
+  },
+  "terminal": {
+    "option_as_meta": false,
+  },
+}
