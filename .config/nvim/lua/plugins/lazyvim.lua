@@ -17,10 +17,12 @@ return {
         pattern = "LazyDone",
         once = true,
         callback = function()
-          require("config.theme").apply()
+          local theme = require("config.theme")
+          theme.apply()
+          theme.start_auto_refresh()
           vim.defer_fn(function()
             layout().apply_default_layout()
-            require("config.theme").solid_backgrounds()
+            theme.apply_palette_overrides()
           end, 200)
         end,
       })

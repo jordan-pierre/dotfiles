@@ -19,3 +19,18 @@
   abbrevCommit = true
   date = relative
 
+[user]
+  signingKey = ~/.ssh/id_ed25519.pub
+
+[gpg]
+  format = ssh
+
+[gpg "ssh"]
+  allowedSignersFile = ~/.config/git/allowed_signers
+
+[commit]
+  gpgSign = true
+
+[tag]
+  gpgSign = true
+

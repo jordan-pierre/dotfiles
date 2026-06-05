@@ -100,53 +100,60 @@ function M.zed_overrides()
   local z   = M.palette()
   local hl  = {}
 
+  -- Transparent background: let WezTerm's window opacity show through neo-tree
+  -- AND the editor uniformly. Floats/popups stay slightly opaque for readability.
+  -- Accent color on the focused-window separator (drawn by tint.nvim companion).
+  local focus_accent = z.purple
+
   -- ── Core editor ──────────────────────────────────────────────────────────
-  hl.Normal          = { fg = z.fg,    bg = z.bg }
-  hl.NormalNC        = { fg = z.fg,    bg = z.bg }
+  hl.Normal          = { fg = z.fg,    bg = "NONE" }
+  hl.NormalNC        = { fg = z.fg,    bg = "NONE" }
   hl.NormalFloat     = { fg = z.fg,    bg = z.panel }
   hl.FloatBorder     = { fg = z.border, bg = z.panel }
   hl.CursorLine      = { bg = z.active_line }
   hl.CursorLineNr    = { fg = z.accent, bold = true }
   hl.LineNr          = { fg = z.muted }
-  hl.WinSeparator    = { fg = z.border, bg = z.bg }
-  hl.SignColumn      = { bg = z.bg }
-  hl.Folded          = { fg = z.muted, bg = z.panel }
-  hl.EndOfBuffer     = { fg = z.bg,    bg = z.bg }
+  hl.WinSeparator    = { fg = focus_accent, bg = "NONE" }
+  hl.SignColumn      = { bg = "NONE" }
+  hl.Folded          = { fg = z.muted, bg = "NONE" }
+  hl.EndOfBuffer     = { fg = "NONE",  bg = "NONE" }
   hl.ColorColumn     = { bg = z.active_line }
   hl.Visual          = { bg = z.active_line }
   hl.Search          = { fg = z.bg,    bg = z.orange, bold = true }
   hl.IncSearch       = { fg = z.bg,    bg = z.accent, bold = true }
 
   -- ── Statusline / tabs ────────────────────────────────────────────────────
-  hl.StatusLine      = { fg = z.fg,   bg = z.bg }
-  hl.StatusLineNC    = { fg = z.muted, bg = z.bg }
-  hl.TabLine         = { fg = z.fg,   bg = z.panel }
-  hl.TabLineFill     = { bg = z.chrome }
-  hl.TabLineSel      = { fg = z.fg,   bg = z.bg, bold = true }
+  hl.StatusLine      = { fg = z.fg,   bg = "NONE" }
+  hl.StatusLineNC    = { fg = z.muted, bg = "NONE" }
+  hl.TabLine         = { fg = z.fg,   bg = "NONE" }
+  hl.TabLineFill     = { bg = "NONE" }
+  hl.TabLineSel      = { fg = z.fg,   bg = "NONE", bold = true }
+  hl.WinBar          = { fg = z.fg,   bg = "NONE" }
+  hl.WinBarNC        = { fg = z.muted, bg = "NONE" }
 
   -- ── Lualine (light mode uses Zed chrome; dark uses cyberdream.nvim's own theme) ──
   if vim.o.background == "light" then
     hl.LualineA = { fg = z.fg,    bg = z.chrome, bold = true }
     hl.LualineB = { fg = z.fg,    bg = z.panel }
-    hl.LualineC = { fg = z.fg,    bg = z.bg }
-    hl.LualineX = { fg = z.muted, bg = z.bg }
+    hl.LualineC = { fg = z.fg,    bg = "NONE" }
+    hl.LualineX = { fg = z.muted, bg = "NONE" }
     hl.LualineY = { fg = z.fg,    bg = z.panel }
     hl.LualineZ = { fg = z.fg,    bg = z.chrome }
   end
 
-  -- ── NeoTree ──────────────────────────────────────────────────────────────
-  hl.NeoTreeNormal        = { fg = z.fg,    bg = z.panel }
-  hl.NeoTreeNormalNC      = { fg = z.fg,    bg = z.panel }
-  hl.NeoTreeEndOfBuffer   = { fg = z.panel, bg = z.panel }
-  hl.NeoTreeWinSeparator  = { fg = z.border, bg = z.bg }
+  -- ── NeoTree (transparent to match the editor) ────────────────────────────
+  hl.NeoTreeNormal        = { fg = z.fg,    bg = "NONE" }
+  hl.NeoTreeNormalNC      = { fg = z.fg,    bg = "NONE" }
+  hl.NeoTreeEndOfBuffer   = { fg = "NONE",  bg = "NONE" }
+  hl.NeoTreeWinSeparator  = { fg = focus_accent, bg = "NONE" }
   hl.NeoTreeTitleBar      = { fg = z.fg,    bg = z.chrome, bold = true }
   hl.NeoTreeCursorLine    = { bg = z.active_line }
 
   -- ── ToggleTerm / terminal buffers ────────────────────────────────────────
-  hl.ToggleTermNormal   = { fg = z.fg, bg = z.bg }
-  hl.ToggleTermNormalNC = { fg = z.fg, bg = z.bg }
-  hl.Term               = { fg = z.fg, bg = z.bg }
-  hl.TermNC             = { fg = z.fg, bg = z.bg }
+  hl.ToggleTermNormal   = { fg = z.fg, bg = "NONE" }
+  hl.ToggleTermNormalNC = { fg = z.fg, bg = "NONE" }
+  hl.Term               = { fg = z.fg, bg = "NONE" }
+  hl.TermNC             = { fg = z.fg, bg = "NONE" }
 
   -- ── Git signs (matches Zed theme_overrides) ──────────────────────────────
   hl.GitSignsAdd          = { fg = z.green }
@@ -280,25 +287,16 @@ function M.zed_overrides()
   return hl
 end
 
-function M.solid_backgrounds()
-  local z = M.palette()
-  -- Force solid (non-transparent) backgrounds on groups the colorscheme
-  -- might leave transparent after theme switching.
-  local solidbg = {
-    "Normal", "NormalNC", "NormalFloat", "WinSeparator",
-    "SignColumn", "EndOfBuffer",
-    "NeoTreeNormal", "NeoTreeNormalNC", "NeoTreeEndOfBuffer",
-    "ToggleTermNormal", "ToggleTermNormalNC",
-    "StatusLine", "StatusLineNC",
-  }
-  for _, group in ipairs(solidbg) do
-    vim.api.nvim_set_hl(0, group, { bg = z.bg })
-  end
-  -- Then apply the full specs (these take precedence over the bg-only pass above).
+function M.apply_palette_overrides()
+  -- Apply Zed-flavored highlight overrides on top of cyberdream. Called
+  -- after each colorscheme load and after light/dark switches.
   for group, spec in pairs(M.zed_overrides()) do
     vim.api.nvim_set_hl(0, group, spec)
   end
 end
+
+-- Back-compat: older modules may still call solid_backgrounds().
+M.solid_backgrounds = M.apply_palette_overrides
 
 function M.setup_cyberdream()
   local ok, cyberdream = pcall(require, "cyberdream")
@@ -308,7 +306,7 @@ function M.setup_cyberdream()
   local variant = vim.o.background == "light" and "light" or "default"
   cyberdream.setup({
     variant          = variant,
-    transparent      = false,
+    transparent      = true,
     italic_comments  = false,
     terminal_colors  = true,
     borderless_pickers = true,
@@ -342,7 +340,31 @@ function M.apply()
   if M.setup_cyberdream() then
     pcall(vim.cmd.colorscheme, "cyberdream")
   end
-  M.solid_backgrounds()
+  M.apply_palette_overrides()
+
+  pcall(function()
+    require("tint").refresh()
+  end)
+end
+
+function M.refresh_if_changed()
+  local desired = M.system_is_dark() and "dark" or "light"
+  if vim.o.background ~= desired then
+    M.apply()
+  end
+end
+
+local _refresh_timer
+function M.start_auto_refresh()
+  if _refresh_timer then return end
+  _refresh_timer = (vim.uv or vim.loop).new_timer()
+  -- Poll macOS appearance every 3s (cheap subprocess; skipped on non-Darwin)
+  _refresh_timer:start(3000, 3000, vim.schedule_wrap(M.refresh_if_changed))
+
+  vim.api.nvim_create_autocmd("FocusGained", {
+    group = vim.api.nvim_create_augroup("ThemeAutoRefresh", { clear = true }),
+    callback = M.refresh_if_changed,
+  })
 end
 
 return M

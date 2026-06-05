@@ -21,7 +21,8 @@ return {
       },
     },
     keys = {
-      { "<leader>cp", "<cmd>CodePreviewStatus<cr>", desc = "Code preview status" },
+      -- <leader>cp is taken by markdown-preview (from lang.markdown extra); use cd for "code diff"
+      { "<leader>cd", "<cmd>CodePreviewStatus<cr>", desc = "Code preview (agent diff)" },
       { "<leader>ch", "<cmd>CodePreviewInstallClaudeCodeHooks<cr>", desc = "Install Claude Code hooks" },
       { "<leader>dq", "<Plug>(CodePreviewCloseAll)", desc = "Close code preview diff" },
     },

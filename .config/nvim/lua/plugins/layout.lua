@@ -12,16 +12,31 @@ return {
   {
     "mrjones2014/smart-splits.nvim",
     lazy = false,
+    priority = 900,
     opts = {
-      at_edge = "stop",
+      at_edge = "wrap",
       default_amount = 3,
     },
-    keys = {
-      { "<C-h>", function() require("smart-splits").move_cursor_left() end, desc = "Move to left window" },
-      { "<C-j>", function() require("smart-splits").move_cursor_down() end, desc = "Move to lower window" },
-      { "<C-k>", function() require("smart-splits").move_cursor_up() end, desc = "Move to upper window" },
-      { "<C-l>", function() require("smart-splits").move_cursor_right() end, desc = "Move to right window" },
-    },
+    config = function(_, opts)
+      local s = require("smart-splits")
+      s.setup(opts)
+      -- LazyVim registers default <C-h/j/k/l> -> :wincmd ... AFTER plugin
+      -- config runs. Hook VeryLazy so our overrides are the last writers.
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "VeryLazy",
+        callback = function()
+          local set = vim.keymap.set
+          set({ "n", "t" }, "<C-h>", s.move_cursor_left,
+            { desc = "Move to left window",  silent = true })
+          set({ "n", "t" }, "<C-j>", s.move_cursor_down,
+            { desc = "Move to lower window", silent = true })
+          set({ "n", "t" }, "<C-k>", s.move_cursor_up,
+            { desc = "Move to upper window", silent = true })
+          set({ "n", "t" }, "<C-l>", s.move_cursor_right,
+            { desc = "Move to right window", silent = true })
+        end,
+      })
+    end,
   },
 
   {
@@ -70,14 +85,6 @@ return {
         desc = "Focus editor",
       },
     },
-    init = function()
-      for i = 1, 9 do
-        local n = i
-        vim.keymap.set("n", "<D-" .. n .. ">", function()
-          layout().goto_buffer_slot(n)
-        end, { desc = "Buffer " .. n, silent = true })
-      end
-    end,
     config = function(_, opts)
       require("toggleterm").setup(opts)
     end,
@@ -99,6 +106,8 @@ return {
         { "<leader>e", group = "IDE layout / panes" },
         { "<leader>f", group = "find" },
         { "<leader>c", group = "code / preview" },
+        { "<leader>m", group = "minimap / markdown" },
+        { "<leader>1", desc = "Buffer 1", hidden = false },
       },
     },
   },

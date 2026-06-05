@@ -88,6 +88,9 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1   # activators never change the prompt
 eval "$(uv generate-shell-completion zsh)"
 eval "$(uvx --generate-shell-completion zsh)"
 
+# Use plain vi for git commit messages / amends so a running nvim IDE layout isn't disturbed
+export GIT_EDITOR=vi
+
 # =========================
 # Paths & Environment Variables
 # =========================

@@ -174,4 +174,54 @@ return {
       end,
     },
   },
+
+  {
+    "Isrothy/neominimap.nvim",
+    version = "v3.*.*",
+    event = "VeryLazy",
+    init = function()
+      vim.g.neominimap = {
+        auto_enable = true,
+        layout = "split",
+        split = {
+          direction = "right",
+          close_if_last_window = true,
+          fix_width = true,
+          minimap_width = 16,
+        },
+        git = { enabled = true },
+        diagnostic = { enabled = true },
+        treesitter = { enabled = true },
+        search = { enabled = true },
+        click = { enabled = true, auto_switch_focus = false },
+      }
+    end,
+  },
+
+  {
+    "levouh/tint.nvim",
+    event = "VeryLazy",
+    opts = function()
+      local is_dark = vim.o.background ~= "light"
+      return {
+        tint = is_dark and -45 or 35,
+        saturation = 0.6,
+        transforms = require("tint").transforms.SATURATE_TINT,
+        tint_background_colors = true,
+        highlight_ignore_patterns = {
+          "WinSeparator", "NeoTreeWinSeparator",
+          "Comment", "LineNr", "SignColumn", "EndOfBuffer",
+        },
+        window_ignore_function = function(winid)
+          local buf = vim.api.nvim_win_get_buf(winid)
+          local ft  = vim.bo[buf].filetype
+          -- Don't tint floating windows or notify popups
+          if vim.api.nvim_win_get_config(winid).relative ~= "" then
+            return true
+          end
+          return ft == "notify" or ft == "noice" or ft == "TelescopePrompt"
+        end,
+      }
+    end,
+  },
 }

@@ -115,8 +115,6 @@ else
 fi
 unset _git_email_suffix _git_email_input_lc __line __val
 
-read -r -p "AWS default profile (or leave empty): " AWS_PROFILE
-
 # -----------------------------------------------------------------------------
 # Interactive shell: default zsh; Nushell adds nu on top
 # -----------------------------------------------------------------------------
@@ -278,7 +276,6 @@ export IS_WORK="$IS_WORK"
 export IS_MACOS="$IS_MACOS"
 export GITHUB_ORG="$GITHUB_ORG"
 export GIT_EMAIL="$GIT_EMAIL"
-export AWS_PROFILE="$AWS_PROFILE"
 export NAME="$NAME"
 EOF
 
@@ -295,7 +292,6 @@ if [[ "$USE_NUSHELL" == "true" ]]; then
 \$env.IS_WORK = "$IS_WORK"
 \$env.GITHUB_ORG = "$GITHUB_ORG"
 \$env.GIT_EMAIL = "$GIT_EMAIL"
-\$env.AWS_PROFILE = "$AWS_PROFILE"
 \$env.NAME = "$NAME"
 EOF
     echo "✅ Nushell config created at ~/.config/shell/personal.nu"

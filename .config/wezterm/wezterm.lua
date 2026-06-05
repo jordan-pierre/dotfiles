@@ -59,13 +59,25 @@ local function sync_claude_theme(appearance)
 	end
 end
 
+local function inactive_hsb_for_appearance(appearance)
+	if appearance and appearance:find("Dark") then
+		return { brightness = 0.75, saturation = 0.95 }
+	end
+	return { brightness = 1.08, saturation = 0.92 }
+end
+
 wezterm.on("window-config-reloaded", function(window, _pane)
 	local appearance = window:get_appearance()
 	local scheme = scheme_for_appearance(appearance)
 	local overrides = window:get_config_overrides() or {}
-	if overrides.color_scheme ~= scheme then
+	local target_hsb = inactive_hsb_for_appearance(appearance)
+	local needs_update = overrides.color_scheme ~= scheme
+		or not overrides.inactive_pane_hsb
+		or overrides.inactive_pane_hsb.brightness ~= target_hsb.brightness
+	if needs_update then
 		overrides.color_scheme = scheme
 		overrides.colors = { tab_bar = tab_bar_colors_for_scheme(scheme) }
+		overrides.inactive_pane_hsb = target_hsb
 		window:set_config_overrides(overrides)
 	end
 	sync_claude_theme(appearance)
@@ -99,11 +111,14 @@ config.window_decorations = "RESIZE"
 config.window_close_confirmation = "AlwaysPrompt"
 config.enable_tab_bar = true
 config.hide_tab_bar_if_only_one_tab = true
-config.window_background_opacity = 0.95
+config.window_background_opacity = 0.92
 config.tab_bar_at_bottom = true
 config.use_fancy_tab_bar = false
 
--- Let Neovim receive Cmd+1-9, Cmd+B, Cmd+P, etc. (kitty keyboard protocol + unbind defaults)
+-- Subtle dim/brighten on unfocused panes; refined in window-config-reloaded
+config.inactive_pane_hsb = { brightness = 0.75, saturation = 0.95 }
+
+-- Let Neovim receive Cmd+B, Cmd+P, etc. (kitty keyboard protocol + unbind defaults)
 config.enable_kitty_keyboard = true
 
 -- Interactive shell: CHOOSE ONE:
@@ -139,12 +154,21 @@ config.cursor_blink_rate = 800
 
 -- Key bindings: separate scrolling from cursor movement, add pane/tab management
 local function is_nvim_pane(pane)
+  -- 1. Most reliable: nvim sets IS_NVIM=true via OSC SetUserVar on VimEnter
   if pane:get_user_vars().IS_NVIM == "true" then
     return true
   end
+  -- 2. Foreground process name (basename only). Works when WEZTERM_PANE env
+  --    propagates and nvim is the actual foreground binary.
   local name = pane:get_foreground_process_name() or ""
-  name = string.gsub(name, "(.*[/\\])(.*)", "%2")
-  return name == "nvim" or name == "vim"
+  local basename = name:match("([^/\\]+)$") or name
+  if basename == "nvim" or basename == "vim" then
+    return true
+  end
+  -- 3. Title heuristic. LazyVim sets the window/pane title to include "Nvim".
+  --    This is the catch-all for wrappers, aliases, or process-name detection failures.
+  local title = pane:get_title() or ""
+  return title:match("[Nn]vim") ~= nil
 end
 
 ---Forward a key to Neovim when focused; otherwise disable WezTerm default (e.g. tab switch).
@@ -158,30 +182,139 @@ local function send_to_nvim(key, mods)
   end)
 end
 
----IDE panes: shell below nvim, Claude to the right (WezTerm multiplex, not nvim toggleterm).
-local function toggle_ide_pane_toward(direction, return_direction)
-  return wezterm.action_callback(function(win, pane)
-    if is_nvim_pane(pane) then
-      win:perform_action(wezterm.action.ActivatePaneDirection(direction), pane)
-    else
-      win:perform_action(wezterm.action.ActivatePaneDirection(return_direction), pane)
+---Classify panes in the active tab relative to the nvim pane.
+---Returns { nvim = info, bottom = info|nil, right = info|nil } using
+---panes_with_info() top/left coordinates so we don't need pane IDs in state.
+local function classify_panes(tab)
+  local panes_info = tab:panes_with_info()
+  local nvim_info
+  for _, info in ipairs(panes_info) do
+    if is_nvim_pane(info.pane) then
+      nvim_info = info
+      break
+    end
+  end
+  if not nvim_info then return nil end
+  local result = { nvim = nvim_info }
+  for _, info in ipairs(panes_info) do
+    if info.pane:pane_id() ~= nvim_info.pane:pane_id() then
+      if info.left > nvim_info.left then
+        result.right = info
+      elseif info.top > nvim_info.top then
+        result.bottom = info
+      end
+    end
+  end
+  return result
+end
+
+-- wezterm.GLOBAL only accepts string keys, so we stringify the pane id.
+local function pane_key(pane_id) return tostring(pane_id) end
+
+local function is_minimized(pane_id)
+  wezterm.GLOBAL.ide_min = wezterm.GLOBAL.ide_min or {}
+  return wezterm.GLOBAL.ide_min[pane_key(pane_id)] == true
+end
+
+local function set_minimized(pane_id, state)
+  wezterm.GLOBAL.ide_min = wezterm.GLOBAL.ide_min or {}
+  wezterm.GLOBAL.ide_min[pane_key(pane_id)] = state and true or nil
+end
+
+-- Remember a pane's pre-minimize size so we can restore it exactly.
+local function save_size(pane_id, size)
+  wezterm.GLOBAL.ide_sizes = wezterm.GLOBAL.ide_sizes or {}
+  wezterm.GLOBAL.ide_sizes[pane_key(pane_id)] = size
+end
+
+local function get_saved_size(pane_id)
+  wezterm.GLOBAL.ide_sizes = wezterm.GLOBAL.ide_sizes or {}
+  return wezterm.GLOBAL.ide_sizes[pane_key(pane_id)]
+end
+
+---Toggle an IDE companion pane (bottom shell or right Claude).
+---Behavior:
+--- - missing -> spawn next to nvim
+--- - present, unfocused -> activate (works from any pane)
+--- - present, focused, not minimized -> shrink + return focus to nvim
+--- - present, minimized -> grow + focus
+---grow_dir is the direction nvim expands to minimize the target;
+---restore_dir is the direction the target expands to restore.
+local function toggle_ide_pane(role, grow_dir, restore_dir)
+  return wezterm.action_callback(function(win, current_pane)
+    local panes_info = current_pane:tab():panes_with_info()
+
+    local nvim_info
+    for _, info in ipairs(panes_info) do
+      if is_nvim_pane(info.pane) then
+        nvim_info = info
+        break
+      end
+    end
+    if not nvim_info then return end
+
+    local target
+    for _, info in ipairs(panes_info) do
+      if info.pane:pane_id() ~= nvim_info.pane:pane_id() then
+        if role == "right" and info.left > nvim_info.left then
+          target = info
+        elseif role == "bottom" and info.left == nvim_info.left and info.top > nvim_info.top then
+          target = info
+        end
+      end
+    end
+
+    if not target then
+      local size = (role == "bottom") and { Cells = 15 } or { Percent = 30 }
+      local dir = (role == "bottom") and "Bottom" or "Right"
+      local split_args = { direction = dir, size = size }
+      if role == "right" then
+        split_args.command = { args = { "claude" } }
+      end
+      nvim_info.pane:split(split_args)
+      return
+    end
+
+    local target_pane = target.pane
+    local target_id = target_pane:pane_id()
+    local focused = (current_pane:pane_id() == target_id)
+    local minimized = is_minimized(target_id)
+    local size_key = (role == "bottom") and "viewport_rows" or "cols"
+
+    if focused and not minimized then
+      -- Save current size so restore can return to exactly this dimension.
+      save_size(target_id, target_pane:get_dimensions()[size_key])
+      win:perform_action(
+        wezterm.action.AdjustPaneSize({ grow_dir, 999 }),
+        nvim_info.pane
+      )
+      set_minimized(target_id, true)
+      nvim_info.pane:activate()
+      return
+    end
+
+    target_pane:activate()
+    if minimized then
+      local saved = get_saved_size(target_id) or 15
+      local delta = saved - target_pane:get_dimensions()[size_key]
+      if delta > 0 then
+        win:perform_action(
+          wezterm.action.AdjustPaneSize({ restore_dir, delta }),
+          target_pane
+        )
+      end
+      set_minimized(target_id, false)
     end
   end)
 end
 
 config.keys = {}
--- Neovim IDE shortcuts (SUPER = Cmd in kitty protocol → <D-…> in Neovim)
-for i = 1, 9 do
-  table.insert(config.keys, {
-    key = tostring(i),
-    mods = "CMD",
-    action = send_to_nvim(tostring(i), "SUPER"),
-  })
-end
+-- Forward chords to Neovim (SUPER = Cmd in kitty protocol → <D-…> in Neovim)
 for _, spec in ipairs({
   { key = "b", mods = "CMD", send = { key = "b", mods = "SUPER" } },
   { key = "p", mods = "CMD", send = { key = "p", mods = "SUPER" } },
   { key = "f", mods = "CMD|SHIFT", send = { key = "f", mods = "SUPER|SHIFT" } },
+  -- Cmd+W: close current buffer in nvim; otherwise close WezTerm tab (handled below)
 }) do
   table.insert(config.keys, {
     key = spec.key,
@@ -189,16 +322,28 @@ for _, spec in ipairs({
     action = send_to_nvim(spec.send.key, spec.send.mods),
   })
 end
--- Shell / Claude live in WezTerm panes; focus them without nvim toggleterm splits.
+-- Cmd+W: nvim → close buffer (<D-w>); elsewhere → close tab (existing behavior)
+table.insert(config.keys, {
+  key = "w",
+  mods = "CMD",
+  action = wezterm.action_callback(function(win, pane)
+    if is_nvim_pane(pane) then
+      win:perform_action(wezterm.action.SendKey({ key = "w", mods = "SUPER" }), pane)
+    else
+      win:perform_action(wezterm.action.CloseCurrentTab({ confirm = true }), pane)
+    end
+  end),
+})
+-- IDE companion panes: true toggle + cross-pane jump
 table.insert(config.keys, {
   key = "`",
   mods = "CTRL",
-  action = toggle_ide_pane_toward("Down", "Up"),
+  action = toggle_ide_pane("bottom", "Down", "Up"),
 })
 table.insert(config.keys, {
   key = "b",
   mods = "CMD|SHIFT",
-  action = toggle_ide_pane_toward("Right", "Left"),
+  action = toggle_ide_pane("right", "Right", "Left"),
 })
 for _, key in ipairs({
   -- ==================
@@ -229,20 +374,19 @@ for _, key in ipairs({
   -- ==================
   -- Create new tab
   { key = "t", mods = "CMD", action = wezterm.action.SpawnTab("CurrentPaneDomain") },
-  -- Close current tab
-  { key = "w", mods = "CMD", action = wezterm.action.CloseCurrentTab({ confirm = true }) },
   -- Navigate tabs
   { key = "[", mods = "CMD", action = wezterm.action.ActivateTabRelative(-1) },
   { key = "]", mods = "CMD", action = wezterm.action.ActivateTabRelative(1) },
-  { key = "1", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(0) },
-  { key = "2", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(1) },
-  { key = "3", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(2) },
-  { key = "4", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(3) },
-  { key = "5", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(4) },
-  { key = "6", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(5) },
-  { key = "7", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(6) },
-  { key = "8", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(7) },
-  { key = "9", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(8) },
+  -- Cmd+1..9 switches WezTerm tabs (was forwarded to nvim previously)
+  { key = "1", mods = "CMD", action = wezterm.action.ActivateTab(0) },
+  { key = "2", mods = "CMD", action = wezterm.action.ActivateTab(1) },
+  { key = "3", mods = "CMD", action = wezterm.action.ActivateTab(2) },
+  { key = "4", mods = "CMD", action = wezterm.action.ActivateTab(3) },
+  { key = "5", mods = "CMD", action = wezterm.action.ActivateTab(4) },
+  { key = "6", mods = "CMD", action = wezterm.action.ActivateTab(5) },
+  { key = "7", mods = "CMD", action = wezterm.action.ActivateTab(6) },
+  { key = "8", mods = "CMD", action = wezterm.action.ActivateTab(7) },
+  { key = "9", mods = "CMD", action = wezterm.action.ActivateTab(8) },
 
   -- ==================
   -- Pane Management
@@ -257,11 +401,11 @@ for _, key in ipairs({
   { key = "j", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Down") },
   { key = "k", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Up") },
   { key = "l", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Right") },
-  -- Resize panes
-  { key = "H", mods = "CMD|CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Left", 5 }) },
-  { key = "J", mods = "CMD|CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Down", 5 }) },
-  { key = "K", mods = "CMD|CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Up", 5 }) },
-  { key = "L", mods = "CMD|CTRL|SHIFT", action = wezterm.action.AdjustPaneSize({ "Right", 5 }) },
+  -- Resize focused pane: Cmd+Alt+Arrow (3 cells per press)
+  { key = "LeftArrow",  mods = "CMD|ALT", action = wezterm.action.AdjustPaneSize({ "Left", 3 }) },
+  { key = "DownArrow",  mods = "CMD|ALT", action = wezterm.action.AdjustPaneSize({ "Down", 3 }) },
+  { key = "UpArrow",    mods = "CMD|ALT", action = wezterm.action.AdjustPaneSize({ "Up", 3 }) },
+  { key = "RightArrow", mods = "CMD|ALT", action = wezterm.action.AdjustPaneSize({ "Right", 3 }) },
   -- Toggle pane zoom
   { key = "z", mods = "CMD", action = wezterm.action.TogglePaneZoomState },
 
