@@ -116,6 +116,20 @@ return {
     "folke/snacks.nvim",
     opts = {
       dashboard = { enabled = false },
+      picker = {
+        layout = {
+          layout = {
+            box = "rounded",
+            border = "rounded",
+            title_pos = "center",
+            height = 0.9,
+            width = 0.9,
+          },
+        },
+        ui_select = true,
+        exclude = { "node_modules", ".git", "dist" },
+        follow = true,
+      },
     },
   },
 }

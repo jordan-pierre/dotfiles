@@ -22,16 +22,18 @@ for i = 1, 9 do
   map("n", "<leader>" .. i, function() layout().goto_buffer_slot(i) end, "Buffer " .. i)
 end
 
--- Cmd+W → close current buffer without disturbing the window layout
-local function close_buffer()
-  local ok, snacks = pcall(require, "snacks")
-  if ok and snacks.bufdelete then
-    snacks.bufdelete()
-    return
+-- Cmd+W → close buffer if focused on a regular buffer, otherwise close tab
+local function close_buffer_or_tab()
+  local ft = vim.bo.filetype
+  local buftype = vim.bo.buftype
+  -- Check if this is a regular editor buffer
+  if buftype == "" and ft ~= "neo-tree" and ft ~= "toggleterm" then
+    vim.cmd("bdelete")
+  else
+    vim.cmd("quit")
   end
-  pcall(vim.cmd, "bdelete")
 end
-map("n", "<D-w>", close_buffer, "Close buffer")
+map("n", "<D-w>", close_buffer_or_tab, "Close buffer or tab")
 
 -- Cmd+Alt+Arrows → resize focused split (matches WezTerm pane resize chord)
 local function smart_resize(direction)

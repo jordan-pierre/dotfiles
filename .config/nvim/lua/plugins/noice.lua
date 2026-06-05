@@ -12,7 +12,7 @@ return {
         size = { width = 60, height = "auto" },
       },
       format = {
-        cmdline = { pattern = "^:", icon = " ", lang = "vim" },
+        cmdline = { pattern = "^:", icon = "📡 ", lang = "vim" },
         search_down = { kind = "search", pattern = "^/", icon = " ", lang = "regex" },
         search_up = { kind = "search", pattern = "^%?", icon = " ", lang = "regex" },
         filter = { pattern = "^:%s*!", icon = " ", lang = "bash" },
