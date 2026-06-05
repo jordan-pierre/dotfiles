@@ -401,6 +401,11 @@ for _, key in ipairs({
   { key = "j", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Down") },
   { key = "k", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Up") },
   { key = "l", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Right") },
+  -- Navigate panes with arrow keys (Ctrl+Cmd+Arrow)
+  { key = "LeftArrow", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Left") },
+  { key = "DownArrow", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Down") },
+  { key = "UpArrow", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Up") },
+  { key = "RightArrow", mods = "CMD|CTRL", action = wezterm.action.ActivatePaneDirection("Right") },
   -- Resize focused pane: Cmd+Alt+Arrow (3 cells per press)
   { key = "LeftArrow",  mods = "CMD|ALT", action = wezterm.action.AdjustPaneSize({ "Left", 3 }) },
   { key = "DownArrow",  mods = "CMD|ALT", action = wezterm.action.AdjustPaneSize({ "Down", 3 }) },
