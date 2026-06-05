@@ -8,6 +8,9 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
   "agent_servers": {
+    "cursor": {
+      "type": "registry"
+    },
     "claude-acp": {
       "type": "registry",
     },
@@ -64,15 +67,26 @@
       "projects": []
     }
   ],
-  "icon_theme": "Material Icon Theme",
-  "ui_font_size": 16,
-  "buffer_font_size": 16,
-  "buffer_font_family": "JetBrainsMonoNL Nerd Font",
-  "theme": {
-    "mode": "system",
-    "light": "Nightrider",
-    "dark": "One Dark",
+  "icon_theme": {
+    "mode": "light",
+    "light": "Material Icon Theme",
+    "dark": "Material Icon Theme"
   },
+  "ui_font_size": 20,
+  "buffer_font_size": 18,
+  "buffer_font_family": "JetBrainsMono NFM",
+  "theme": {
+    "mode": "light",
+    "light": "Cyberdream light",
+    "dark": "Cyberdream dark",
+  },
+  "format_on_save": "on",
+  "preferred_line_length": 120,
+  "wrap_guides": [120],
+  "show_wrap_guides": true,
+  "show_whitespaces": "boundary",
+  "ensure_final_newline_on_save": true,
+  "remove_trailing_whitespace_on_save": true,
   "telemetry": {
     "diagnostics": false,
     "metrics": false,
@@ -90,23 +104,54 @@
   ],
   "snippet_sort_order": "top",
   "buffer_font_features": {
-    "calt": false,
+    "calt": true,
+    "liga": true,
   },
-  "tabs": { "file_icons": true },
+  "project_panel": {
+    "git_status": true,
+    "git_colors": true,
+  },
+  "tabs": {
+    "file_icons": true,
+    "git_status": true,
+    "git_colors": true,
+  },
+  "theme_overrides": {
+    "Cyberdream dark": {
+      "version_control.added": "#5eff6c",
+      "version_control.modified": "#ffbd5e",
+      "version_control.deleted": "#ff6e5e",
+    },
+    "Cyberdream light": {
+      "status_bar.background": "#f5f5f5",
+      "version_control.added": "#008b0c",
+      "version_control.modified": "#d17c00",
+      "version_control.deleted": "#d11500",
+    },
+  },
   "git": { "inline_blame": { "enabled": false } },
   "autosave": "on_focus_change",
   "show_edit_predictions": false,
   "show_completions_on_input": true,
+  // Zed defaults inlay_hints.enabled to false; VS Code/Cursor show ty hints by default.
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true,
+  },
   "languages": {
     "Python": {
-      "language_servers": ["basedpyright", "ruff"],
+      "language_servers": ["ty", "ruff", "!basedpyright", "!pyright"],
       "format_on_save": "on",
       "formatter": [
         {
-          "code_action": "source.organizeImports.ruff",
-        },
-        {
-          "code_action": "source.fixAll.ruff",
+          "code_actions": {
+            "source.organizeImports": true,
+            "source.organizeImports.ruff": true,
+            "source.fixAll": true,
+            "source.fixAll.ruff": true,
+          },
         },
         {
           "language_server": {
@@ -114,6 +159,20 @@
           },
         },
       ],
+    },
+    "JSON": {
+      "format_on_save": "on",
+      "tab_size": 4,
+    },
+    "JSONC": {
+      "format_on_save": "on",
+      "tab_size": 4,
+    },
+    "YAML": {
+      "format_on_save": "on",
+    },
+    "TOML": {
+      "format_on_save": "on",
     },
     "Zig": {
       // Formatting with ZLS matches `zig fmt`.
@@ -131,42 +190,31 @@
       },
     },
     "SQL": {
+      "format_on_save": "on",
+      "tab_size": 4,
       "formatter": {
         "external": {
           "command": "sql-formatter",
-          "arguments": ["--language", "mysql"],
+          "arguments": [
+            "-l",
+            "snowflake",
+            "-c",
+            "~/.config/zed/sql-formatter.json",
+          ],
         },
       },
     },
   },
   "lsp": {
-    "pyright": {
-      "settings": {
-        "python.analysis": {
-          "diagnosticMode": "workspace",
-          // "typeCheckingMode": "strict"
-        },
-        "python": {
-          "pythonPath": ".venv/bin/python",
-        },
-      },
-    },
-    "basedpyright": {
-      "settings": {
-        "basedpyright.analysis": {
-          "diagnosticMode": "workspace",
-          // "typeCheckingMode": "strict"
-        },
-        "python": {
-          "pythonPath": ".venv/bin/python",
-        },
-      },
-    },
     "ty": {
       "settings": {
         "diagnosticMode": "workspace",
         "disableLanguageServices": false,
-        "experimental": {
+        "inlayHints": {
+          "variableTypes": true,
+          "callArgumentNames": true,
+        },
+        "completions": {
           "autoImport": true,
         },
       },
@@ -174,10 +222,9 @@
     "ruff": {
       "initialization_options": {
         "settings": {
-          "lineLength": 110,
+          "lineLength": 120,
           "showSyntaxErrors": true,
           "lint": {
-            // "extendSelect": ["I"],
             "unfixable": ["F401"],
           },
         },
@@ -185,6 +232,17 @@
     },
   },
   "terminal": {
+    "font_size": 18,
+    "font_family": "JetBrainsMono NFM",
+    "font_features": {
+      "calt": true,
+      "liga": true,
+    },
+    "shell": {
+      "program": "/bin/zsh",
+    },
+    "cursor_shape": "bar",
+    "blinking": "on",
     "option_as_meta": false,
   },
 }

@@ -39,6 +39,26 @@ local function scheme_for_appearance(appearance)
 	end
 	return light_scheme
 end
+
+-- Sync Claude Code theme to match appearance
+local claude_theme_path = wezterm.home_dir .. '/.claude/themes/cyberdream-auto.json'
+local claude_theme_dark = '{"name":"Cyberdream Auto","base":"dark","overrides":{"claude":"#bd5eff","text":"#ffffff","inverseText":"#1a1625","inactive":"#3c4048","subtle":"#3c4048","suggestion":"#3c4048","permission":"#5ea1ff","remember":"#f1ff5e","promptBorder":"#5ea1ff","planMode":"#5ea1ff","autoAccept":"#5eff6c","bashBorder":"#f1ff5e","ide":"#5ef1ff","fastMode":"#bd5eff","success":"#5eff6c","error":"#ff6e5e","warning":"#f1ff5e","merged":"#bd5eff","diffAdded":"#1a3020","diffRemoved":"#3a1a1a","diffAddedDimmed":"#151e15","diffRemovedDimmed":"#271515","diffAddedWord":"#2a5030","diffRemovedWord":"#5a2020","userMessageBackground":"#221930","userMessageBackgroundHover":"#2a2040","messageActionsBackground":"#2a2040","bashMessageBackgroundColor":"#1e1c12","memoryBackgroundColor":"#1e1c12","selectionBg":"#3c4048","briefLabelYou":"#5ea1ff","briefLabelClaude":"#bd5eff","rate_limit_fill":"#bd5eff","rate_limit_empty":"#3c4048"}}\n'
+local claude_theme_light = '{"name":"Cyberdream Auto","base":"light","overrides":{"claude":"#a018ff","text":"#16181a","inverseText":"#ffffff","inactive":"#7b8496","subtle":"#7b8496","suggestion":"#7b8496","permission":"#0057d1","remember":"#997b00","promptBorder":"#0057d1","planMode":"#0057d1","autoAccept":"#008b0c","bashBorder":"#997b00","ide":"#008c99","fastMode":"#a018ff","success":"#008b0c","error":"#d11500","warning":"#997b00","merged":"#a018ff","diffAdded":"#d4f0da","diffRemoved":"#f0d4d4","diffAddedDimmed":"#e8f5eb","diffRemovedDimmed":"#f5e8e8","diffAddedWord":"#a8ddb5","diffRemovedWord":"#dba8a8","userMessageBackground":"#f0eaf8","userMessageBackgroundHover":"#e8e0f5","messageActionsBackground":"#e8e0f5","bashMessageBackgroundColor":"#f5f3e8","memoryBackgroundColor":"#f5f3e8","selectionBg":"#acacac","briefLabelYou":"#0057d1","briefLabelClaude":"#a018ff","rate_limit_fill":"#a018ff","rate_limit_empty":"#acacac"}}\n'
+local function sync_claude_theme(appearance)
+	local content = (appearance and appearance:find('Dark')) and claude_theme_dark or claude_theme_light
+	local f = io.open(claude_theme_path, 'r')
+	if f then
+		local current = f:read('*a')
+		f:close()
+		if current == content then return end
+	end
+	local out = io.open(claude_theme_path, 'w')
+	if out then
+		out:write(content)
+		out:close()
+	end
+end
+
 wezterm.on("window-config-reloaded", function(window, _pane)
 	local appearance = window:get_appearance()
 	local scheme = scheme_for_appearance(appearance)
@@ -48,7 +68,13 @@ wezterm.on("window-config-reloaded", function(window, _pane)
 		overrides.colors = { tab_bar = tab_bar_colors_for_scheme(scheme) }
 		window:set_config_overrides(overrides)
 	end
+	sync_claude_theme(appearance)
 end)
+
+-- Initial sync on startup
+if wezterm.gui then
+	sync_claude_theme(wezterm.gui.get_appearance())
+end
 
 -- Toggle light/dark manually (Cmd+Shift+T); next system theme change will sync again
 wezterm.on("toggle-color-scheme", function(window, _pane)
@@ -77,6 +103,8 @@ config.window_background_opacity = 0.95
 config.tab_bar_at_bottom = true
 config.use_fancy_tab_bar = false
 
+-- Let Neovim receive Cmd+1-9, Cmd+B, Cmd+P, etc. (kitty keyboard protocol + unbind defaults)
+config.enable_kitty_keyboard = true
 
 -- Interactive shell: CHOOSE ONE:
 -- =========================
@@ -110,7 +138,69 @@ config.default_cursor_style = "BlinkingBar"
 config.cursor_blink_rate = 800
 
 -- Key bindings: separate scrolling from cursor movement, add pane/tab management
-config.keys = {
+local function is_nvim_pane(pane)
+  if pane:get_user_vars().IS_NVIM == "true" then
+    return true
+  end
+  local name = pane:get_foreground_process_name() or ""
+  name = string.gsub(name, "(.*[/\\])(.*)", "%2")
+  return name == "nvim" or name == "vim"
+end
+
+---Forward a key to Neovim when focused; otherwise disable WezTerm default (e.g. tab switch).
+local function send_to_nvim(key, mods)
+  return wezterm.action_callback(function(win, pane)
+    if is_nvim_pane(pane) then
+      win:perform_action(wezterm.action.SendKey({ key = key, mods = mods }), pane)
+    else
+      win:perform_action(wezterm.action.DisableDefaultAssignment, pane)
+    end
+  end)
+end
+
+---IDE panes: shell below nvim, Claude to the right (WezTerm multiplex, not nvim toggleterm).
+local function toggle_ide_pane_toward(direction, return_direction)
+  return wezterm.action_callback(function(win, pane)
+    if is_nvim_pane(pane) then
+      win:perform_action(wezterm.action.ActivatePaneDirection(direction), pane)
+    else
+      win:perform_action(wezterm.action.ActivatePaneDirection(return_direction), pane)
+    end
+  end)
+end
+
+config.keys = {}
+-- Neovim IDE shortcuts (SUPER = Cmd in kitty protocol → <D-…> in Neovim)
+for i = 1, 9 do
+  table.insert(config.keys, {
+    key = tostring(i),
+    mods = "CMD",
+    action = send_to_nvim(tostring(i), "SUPER"),
+  })
+end
+for _, spec in ipairs({
+  { key = "b", mods = "CMD", send = { key = "b", mods = "SUPER" } },
+  { key = "p", mods = "CMD", send = { key = "p", mods = "SUPER" } },
+  { key = "f", mods = "CMD|SHIFT", send = { key = "f", mods = "SUPER|SHIFT" } },
+}) do
+  table.insert(config.keys, {
+    key = spec.key,
+    mods = spec.mods,
+    action = send_to_nvim(spec.send.key, spec.send.mods),
+  })
+end
+-- Shell / Claude live in WezTerm panes; focus them without nvim toggleterm splits.
+table.insert(config.keys, {
+  key = "`",
+  mods = "CTRL",
+  action = toggle_ide_pane_toward("Down", "Up"),
+})
+table.insert(config.keys, {
+  key = "b",
+  mods = "CMD|SHIFT",
+  action = toggle_ide_pane_toward("Right", "Left"),
+})
+for _, key in ipairs({
   -- ==================
   -- Scrolling
   -- ==================
@@ -144,15 +234,15 @@ config.keys = {
   -- Navigate tabs
   { key = "[", mods = "CMD", action = wezterm.action.ActivateTabRelative(-1) },
   { key = "]", mods = "CMD", action = wezterm.action.ActivateTabRelative(1) },
-  { key = "1", mods = "CMD", action = wezterm.action.ActivateTab(0) },
-  { key = "2", mods = "CMD", action = wezterm.action.ActivateTab(1) },
-  { key = "3", mods = "CMD", action = wezterm.action.ActivateTab(2) },
-  { key = "4", mods = "CMD", action = wezterm.action.ActivateTab(3) },
-  { key = "5", mods = "CMD", action = wezterm.action.ActivateTab(4) },
-  { key = "6", mods = "CMD", action = wezterm.action.ActivateTab(5) },
-  { key = "7", mods = "CMD", action = wezterm.action.ActivateTab(6) },
-  { key = "8", mods = "CMD", action = wezterm.action.ActivateTab(7) },
-  { key = "9", mods = "CMD", action = wezterm.action.ActivateTab(8) },
+  { key = "1", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(0) },
+  { key = "2", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(1) },
+  { key = "3", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(2) },
+  { key = "4", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(3) },
+  { key = "5", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(4) },
+  { key = "6", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(5) },
+  { key = "7", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(6) },
+  { key = "8", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(7) },
+  { key = "9", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(8) },
 
   -- ==================
   -- Pane Management
@@ -191,7 +281,9 @@ config.keys = {
   { key = "f", mods = "CMD", action = wezterm.action.Search({ CaseSensitiveString = "" }) },
   -- Reload configuration
   { key = "r", mods = "CMD|SHIFT", action = wezterm.action.ReloadConfiguration },
-}
+}) do
+  table.insert(config.keys, key)
+end
 
 -- Machine-local overrides (~/.config/wezterm/local.lua), generated by scripts/setup.sh when WezTerm is primary
 do

@@ -1,0 +1,7 @@
+{
+  "language": "snowflake",
+  "tabWidth": 4,
+  "keywordCase": "upper",
+  "linesBetweenQueries": 2,
+  "expressionWidth": 120
+}
