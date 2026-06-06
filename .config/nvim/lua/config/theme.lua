@@ -141,6 +141,23 @@ function M.zed_overrides()
     hl.LualineZ = { fg = z.fg,    bg = z.chrome }
   end
 
+  -- ── Snacks picker ────────────────────────────────────────────────────────
+  local pick_bg = "#2d1a45"   -- visible purple list/input background
+  local pick_cur = "#1a2d50"  -- dark blue cursor line
+  hl.SnacksPickerNormal        = { fg = z.fg,     bg = pick_bg }
+  hl.SnacksPickerBorder        = { fg = z.border, bg = pick_bg }
+  hl.SnacksPickerTitle         = { fg = z.accent, bg = pick_bg, bold = true }
+  hl.SnacksPickerPreviewNormal = { fg = z.fg,     bg = z.bg }
+  hl.SnacksPickerPreviewBorder = { fg = z.border, bg = z.bg }
+  hl.SnacksPickerPreviewTitle  = { fg = z.accent, bg = z.bg, bold = true }
+  hl.SnacksPickerInputNormal   = { fg = z.fg,     bg = pick_bg }
+  hl.SnacksPickerInputBorder   = { fg = z.accent, bg = pick_bg }
+  hl.SnacksPickerInputTitle    = { fg = z.accent, bg = pick_bg, bold = true }
+  hl.SnacksPickerMatch         = { fg = z.cyan,   bold = true }
+  hl.SnacksPickerSelected      = { fg = z.green }
+  hl.SnacksPickerCursorLine    = { bg = pick_cur }
+  hl.SnacksPickerDir           = { fg = "#a89bc0" }
+
   -- ── NeoTree (transparent to match the editor) ────────────────────────────
   hl.NeoTreeNormal        = { fg = z.fg,    bg = "NONE" }
   hl.NeoTreeNormalNC      = { fg = z.fg,    bg = "NONE" }

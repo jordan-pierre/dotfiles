@@ -127,8 +127,14 @@ return {
           },
         },
         ui_select = true,
-        exclude = { "node_modules", ".git", "dist" },
         follow = true,
+        sources = {
+          files = {
+            hidden = true,
+            ignored = false,
+            exclude = { "node_modules", ".git", "dist" },
+          },
+        },
       },
     },
   },
