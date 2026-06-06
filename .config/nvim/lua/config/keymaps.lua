@@ -22,13 +22,21 @@ for i = 1, 9 do
   map("n", "<leader>" .. i, function() layout().goto_buffer_slot(i) end, "Buffer " .. i)
 end
 
--- Cmd+W → close buffer if focused on a regular buffer, otherwise close tab
+-- Cmd+W → close buffer if focused on a regular buffer, otherwise close tab.
+-- If closing the last listed buffer, open a new empty buffer instead so the
+-- editor window stays alive (prevents neo-tree from targeting the minimap pane).
 local function close_buffer_or_tab()
   local ft = vim.bo.filetype
   local buftype = vim.bo.buftype
-  -- Check if this is a regular editor buffer
   if buftype == "" and ft ~= "neo-tree" and ft ~= "toggleterm" then
-    vim.cmd("bdelete")
+    local cur = vim.api.nvim_get_current_buf()
+    local remaining = vim.tbl_filter(function(b)
+      return vim.api.nvim_buf_is_valid(b) and vim.bo[b].buflisted and b ~= cur
+    end, vim.api.nvim_list_bufs())
+    if #remaining == 0 then
+      vim.cmd("enew")
+    end
+    vim.cmd("bdelete " .. cur)
   else
     vim.cmd("quit")
   end

@@ -2,6 +2,7 @@ return {
   {
     "nvim-neo-tree/neo-tree.nvim",
     opts = {
+      open_files_do_not_replace_types = { "terminal", "toggleterm", "trouble", "qf", "neominimap" },
       filesystem = {
         filtered_items = {
           visible = true,
@@ -31,7 +32,20 @@ return {
         mappings = {
           ["<space>"] = "toggle_node",
           ["<2-LeftMouse>"] = "open",
-          ["<cr>"] = "open",
+          ["<cr>"] = function(state)
+            local node = state.tree:get_node()
+            if node.type == "file" then
+              local layout = require("config.layout")
+              if not layout.center_editor_win() then
+                pcall(vim.cmd, "Neominimap off")
+                vim.schedule(function()
+                  require("neo-tree.sources.filesystem.commands").open(state)
+                end)
+                return
+              end
+            end
+            require("neo-tree.sources.filesystem.commands").open(state)
+          end,
           ["<esc>"] = "cancel",
           ["P"] = { "toggle_preview", config = { use_float = true } },
           ["l"] = "focus_preview",
@@ -117,7 +131,15 @@ return {
       opts.sections = vim.tbl_extend("force", opts.sections or {}, {
         -- Left: mode | branch | diff hunks | diagnostics
         lualine_a = { "mode" },
-        lualine_b = { "branch", "diff" },
+        lualine_b = { "branch", {
+          "diff",
+          source = function()
+            local gs = vim.b.gitsigns_status_dict
+            if gs then
+              return { added = gs.added, modified = gs.changed, removed = gs.removed }
+            end
+          end,
+        } },
         lualine_c = {
           {
             "diagnostics",

@@ -14,6 +14,7 @@ local SKIP_FT = {
   ["snacks_dashboard"] = true,
   ["trouble"] = true,
   ["Trouble"] = true,
+  ["neominimap"] = true,
 }
 
 function M.in_wezterm()
