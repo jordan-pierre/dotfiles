@@ -95,6 +95,8 @@ return {
     opts = function(_, opts)
       opts.window = opts.window or {}
       opts.window.width = math.max(28, math.floor(vim.o.columns * 0.22))
+      opts.window.mappings = opts.window.mappings or {}
+      opts.window.mappings["<Esc>"] = function() layout().focus_editor() end
       return opts
     end,
   },
