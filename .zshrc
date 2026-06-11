@@ -92,6 +92,11 @@ eval "$(uvx --generate-shell-completion zsh)"
 export GIT_EDITOR=vi
 
 # =========================
+# Pager Configuration
+# =========================
+export LESS='-R'  # Enable color and arrow key support in less
+
+# =========================
 # Paths & Environment Variables
 # =========================
 if [[ "$IS_MACOS" == "true" ]]; then
@@ -133,6 +138,7 @@ alias lzd='lazydocker'
 alias lzg='lazygit'
 alias top='btop'
 alias sysinfo='fastfetch'
+alias speed-test='cloudflare-speed-cli'
 
 # Other aliases
 alias vim='nvim'
