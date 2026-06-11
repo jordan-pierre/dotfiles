@@ -2,6 +2,7 @@
 .config/shell/personal.env
 .config/shell/personal.nu
 .zsh_local_rc
+.config/git/allowed_signers
 
 # OS-specific files
 .DS_Store

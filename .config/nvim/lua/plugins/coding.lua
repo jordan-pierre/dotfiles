@@ -59,24 +59,11 @@ return {
     },
   },
 
-  -- LSP Configuration
+  -- LSP Configuration (Python: ty + ruff via lua/plugins/python.lua)
   {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        -- Python
-        pyright = {
-          settings = {
-            python = {
-              analysis = {
-                typeCheckingMode = "basic",
-                autoSearchPaths = true,
-                useLibraryCodeForTypes = true,
-              },
-            },
-          },
-        },
-        -- Lua
         lua_ls = {
           settings = {
             Lua = {
@@ -89,12 +76,8 @@ return {
             },
           },
         },
-        -- TypeScript/JavaScript: use LazyVim extra (lang.typescript) → vtsls + typescript.nvim
-        -- JSON
         jsonls = {},
-        -- YAML
         yamlls = {},
-        -- Bash
         bashls = {},
       },
     },
@@ -105,19 +88,12 @@ return {
     "mason-org/mason.nvim",
     opts = {
       ensure_installed = {
-        -- Formatters
         "stylua",
-        "black",
-        "isort",
         "prettier",
         "shfmt",
-        -- Linters
         "shellcheck",
-        "flake8",
         "eslint_d",
         "yamllint",
-        -- LSP servers (vtsls used by extras.lang.typescript)
-        "pyright",
         "lua-language-server",
         "vtsls",
         "json-lsp",
@@ -127,21 +103,18 @@ return {
     },
   },
 
-  -- Auto pairs
   {
     "windwp/nvim-autopairs",
     event = "InsertEnter",
     opts = {},
   },
 
-  -- Comments
   {
     "numToStr/Comment.nvim",
     opts = {},
     lazy = false,
   },
 
-  -- Git signs in gutter
   {
     "lewis6991/gitsigns.nvim",
     opts = {
@@ -153,16 +126,17 @@ return {
         changedelete = { text = "▎" },
         untracked = { text = "▎" },
       },
-      current_line_blame = false,
+      current_line_blame = true,
       current_line_blame_opts = {
         virt_text = true,
         virt_text_pos = "eol",
-        delay = 1000,
+        delay = 300,
+        ignore_whitespace = false,
       },
+      current_line_blame_formatter = "<author>, <author_time:%R> · <summary>",
     },
   },
 
-  -- Indent guides
   {
     "lukas-reineke/indent-blankline.nvim",
     event = { "BufReadPost", "BufNewFile" },
@@ -191,4 +165,3 @@ return {
     main = "ibl",
   },
 }
-

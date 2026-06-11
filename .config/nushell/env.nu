@@ -35,10 +35,6 @@ $env.LS_COLORS = (vivid generate cyberdream)
 $env.STARSHIP_CONFIG = ($env.XDG_CONFIG_HOME | path join "starship" "starship.toml")
 $env.VIRTUAL_ENV_DISABLE_PROMPT = "1"
 
-if ("AWS_PROFILE" in $env) and ($env.AWS_PROFILE | is-not-empty) {
-    $env.AWS_DEFAULT_PROFILE = $env.AWS_PROFILE
-}
-
 # =========================
 # Tool Initializations
 # =========================

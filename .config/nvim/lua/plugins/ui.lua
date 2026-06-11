@@ -1,21 +1,19 @@
 return {
-  -- Neo-tree file explorer
   {
     "nvim-neo-tree/neo-tree.nvim",
     opts = {
+      open_files_do_not_replace_types = { "terminal", "toggleterm", "trouble", "qf", "neominimap" },
       filesystem = {
         filtered_items = {
-          visible = true, -- Show filtered (hidden) items
-          hide_dotfiles = false, -- Do not hide dotfiles
-          hide_gitignored = false, -- Show gitignored files too
+          visible = true,
+          hide_dotfiles = false,
+          hide_gitignored = false,
           hide_by_name = {
-            -- Still hide some common build/cache directories
             "node_modules",
             ".DS_Store",
             "Thumbs.db",
           },
           hide_by_pattern = {
-            -- Hide some patterns but allow dotfiles
             "*.tmp",
             "*.log",
           },
@@ -29,11 +27,25 @@ return {
       },
       window = {
         position = "left",
-        width = 35,
+        width = math.max(28, math.floor(vim.o.columns * 0.22)),
+        winblend = 0,
         mappings = {
           ["<space>"] = "toggle_node",
           ["<2-LeftMouse>"] = "open",
-          ["<cr>"] = "open",
+          ["<cr>"] = function(state)
+            local node = state.tree:get_node()
+            if node.type == "file" then
+              local layout = require("config.layout")
+              if not layout.center_editor_win() then
+                pcall(vim.cmd, "Neominimap off")
+                vim.schedule(function()
+                  require("neo-tree.sources.filesystem.commands").open(state)
+                end)
+                return
+              end
+            end
+            require("neo-tree.sources.filesystem.commands").open(state)
+          end,
           ["<esc>"] = "cancel",
           ["P"] = { "toggle_preview", config = { use_float = true } },
           ["l"] = "focus_preview",
@@ -62,7 +74,6 @@ return {
           ["?"] = "show_help",
           ["<"] = "prev_source",
           [">"] = "next_source",
-          -- Add toggle for hidden files
           ["H"] = "toggle_hidden",
         },
       },
@@ -78,12 +89,6 @@ return {
           expander_collapsed = "▶",
           expander_expanded = "▼",
           expander_highlight = "NeoTreeExpander",
-        },
-        icon = {
-          folder_closed = "📁",
-          folder_open = "📂",
-          folder_empty = "📁",
-          default = "📄",
         },
         modified = {
           symbol = "[+]",
@@ -109,45 +114,48 @@ return {
         },
       },
     },
-    config = function(_, opts)
-      require("neo-tree").setup(opts)
+  },
+
+  {
+    "nvim-lualine/lualine.nvim",
+    opts = function(_, opts)
+      opts.options = vim.tbl_extend("force", opts.options or {}, {
+        -- cyberdream.nvim registers its lualine theme when extensions.lualine=true;
+        -- "auto" then picks it up and gives mode-coloured blocks like Cursor.
+        theme = "auto",
+        globalstatus = true,
+        -- Flat separators: no powerline arrows, matches Cursor/Zed style
+        component_separators = { left = "", right = "" },
+        section_separators   = { left = "", right = "" },
+      })
+      opts.sections = vim.tbl_extend("force", opts.sections or {}, {
+        -- Left: mode | branch | diff hunks | diagnostics
+        lualine_a = { "mode" },
+        lualine_b = { "branch", {
+          "diff",
+          source = function()
+            local gs = vim.b.gitsigns_status_dict
+            if gs then
+              return { added = gs.added, modified = gs.changed, removed = gs.removed }
+            end
+          end,
+        } },
+        lualine_c = {
+          {
+            "diagnostics",
+            symbols = { error = " ", warn = " ", info = " ", hint = "󰌶 " },
+          },
+        },
+        -- Center: relative file path
+        lualine_x = { { "filename", path = 1 } },
+        -- Right: filetype | line:col
+        lualine_y = { { "filetype", icon_only = false } },
+        lualine_z = { "location" },
+      })
+      return opts
     end,
   },
 
-  -- Better terminal integration
-  {
-    "akinsho/toggleterm.nvim",
-    keys = {
-      { "<C-/>", "<cmd>ToggleTerm<cr>", desc = "Toggle Terminal" },
-      { "<leader>tf", "<cmd>ToggleTerm direction=float<cr>", desc = "Toggle Floating Terminal" },
-      { "<leader>th", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Toggle Horizontal Terminal" },
-      { "<leader>tv", "<cmd>ToggleTerm direction=vertical size=80<cr>", desc = "Toggle Vertical Terminal" },
-    },
-    opts = {
-      size = function(term)
-        if term.direction == "horizontal" then
-          return 15
-        elseif term.direction == "vertical" then
-          return vim.o.columns * 0.4
-        end
-      end,
-      open_mapping = [[<C-/>]],
-      hide_numbers = true,
-      shade_terminals = true,
-      start_in_insert = true,
-      insert_mappings = true,
-      persist_size = true,
-      direction = "horizontal",
-      close_on_exit = true,
-      shell = vim.o.shell,
-      float_opts = {
-        border = "curved",
-        winblend = 3,
-      },
-    },
-  },
-
-  -- Telescope (fzf-native optional: add dependency + load extension to get fzf-style sorting)
   {
     "nvim-telescope/telescope.nvim",
     dependencies = {
@@ -176,7 +184,6 @@ return {
     end,
   },
 
-  -- Better notifications
   {
     "rcarriga/nvim-notify",
     opts = {
@@ -190,5 +197,53 @@ return {
     },
   },
 
-}
+  {
+    "Isrothy/neominimap.nvim",
+    version = "v3.*.*",
+    event = "VeryLazy",
+    init = function()
+      vim.g.neominimap = {
+        auto_enable = true,
+        layout = "split",
+        split = {
+          direction = "right",
+          close_if_last_window = true,
+          fix_width = true,
+          minimap_width = 16,
+        },
+        git = { enabled = true },
+        diagnostic = { enabled = true },
+        treesitter = { enabled = true },
+        search = { enabled = true },
+        click = { enabled = true, auto_switch_focus = false },
+      }
+    end,
+  },
 
+  {
+    "levouh/tint.nvim",
+    event = "VeryLazy",
+    opts = function()
+      local is_dark = vim.o.background ~= "light"
+      return {
+        tint = is_dark and -45 or 35,
+        saturation = 0.6,
+        transforms = require("tint").transforms.SATURATE_TINT,
+        tint_background_colors = true,
+        highlight_ignore_patterns = {
+          "WinSeparator", "NeoTreeWinSeparator",
+          "Comment", "LineNr", "SignColumn", "EndOfBuffer",
+        },
+        window_ignore_function = function(winid)
+          local buf = vim.api.nvim_win_get_buf(winid)
+          local ft  = vim.bo[buf].filetype
+          -- Don't tint floating windows or notify popups
+          if vim.api.nvim_win_get_config(winid).relative ~= "" then
+            return true
+          end
+          return ft == "notify" or ft == "noice" or ft == "TelescopePrompt"
+        end,
+      }
+    end,
+  },
+}

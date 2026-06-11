@@ -1,0 +1,5 @@
+#command
+\e[A  back-line
+\e[B  forw-line
+\eOA  back-line
+\eOB  forw-line

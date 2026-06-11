@@ -1,0 +1,6 @@
+\.DS_Store
+\.git
+scripts
+README\.md
+nvim\.log
+\.config/raycast

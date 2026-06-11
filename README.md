@@ -29,7 +29,7 @@ cd ~/dotfiles
 stow .
 ```
 
-Setup asks for **machine type**, **git/email/AWS**, **shell** (default **zsh** or **Nushell** on top of zsh), optional **vivid**, **fzf**, and related CLI tools, **Nerd Font**, and **primary terminal** (**WezTerm** default vs **Other / OS Default**). **Homebrew** is used on macOS; **dnf/apt** on Linux (no Homebrew there). See [Setting Up New Machines](#setting-up-new-machines) for the full list.
+Setup asks for **machine type**, **git name/email**, **shell** (default **zsh** or **Nushell** on top of zsh), optional **vivid**, **fzf**, and related CLI tools, **Nerd Font**, and **primary terminal** (**WezTerm** default vs **Other / OS Default**). **Homebrew** is used on macOS; **dnf/apt** on Linux (no Homebrew there). See [Setting Up New Machines](#setting-up-new-machines) for the full list.
 
 ### Manual Setup
 
@@ -79,7 +79,6 @@ Machine-specific details are stored in `~/.config/shell/personal.env`. If you ch
 - `IS_MACOS` - macOS vs Linux detection
 - `GITHUB_ORG` - Your GitHub organization (may be empty; **`gh_search --org`** / **`ghso`** requires it — set via setup or `export`)
 - `GIT_EMAIL` - Your git commit email (may be empty; set a real address before committing; **`None`** in setup clears global **`user.email`**)
-- `AWS_PROFILE` - Your AWS default profile
 - `NAME` - Your full name
 
 ### Local Machine Configuration (Not Synced)
@@ -91,6 +90,36 @@ Machine-specific items are kept in `~/.zsh_local_rc`:
 - Temporary tools and shortcuts
 
 Re-running **`./scripts/setup.sh`** does **not** overwrite **`~/.zsh_local_rc`** if it is already non-empty; delete or truncate the file first if you want the setup template re-created.
+
+## Neovim IDE Cheatsheet
+
+Quick reference for the keybindings/features wired up in `.config/nvim/` + `.config/wezterm/`:
+
+### Pane / window navigation
+- **Cmd+`** — toggle the bottom shell pane. Closed → opens + focuses. Open + focused → minimizes back to nvim. Open + unfocused → focuses (works from any pane).
+- **Cmd+Shift+B** — same toggle for the right Claude pane.
+- **Ctrl+H/J/K/L** — move focus between nvim splits (via smart-splits).
+- **Cmd+Ctrl+H/J/K/L** — move focus between WezTerm panes.
+- **Cmd+Alt+Arrow** — resize the focused pane (3 cells/press). Works in both nvim splits and WezTerm panes. **macOS Mission Control may capture Cmd+Alt+Arrow** — disable in *System Settings → Keyboard → Keyboard Shortcuts → Mission Control* if needed.
+
+### Tabs / buffers
+- **Cmd+1..9** — switch WezTerm tab.
+- **`<leader>1..9`** — jump to nvim buffer slot (most-recent first).
+- **Cmd+W** — in nvim editor, closes the current buffer (layout intact). In any other pane, closes the WezTerm tab.
+- **Cmd+T** — new WezTerm tab; **Cmd+[ / Cmd+]** — prev/next tab.
+
+### Editing
+- **`<A-j>` / `<A-k>` (or `<A-Up>` / `<A-Down>`)** — move line/selection up/down (normal, insert, visual).
+- **Ctrl+N** — add a cursor at the next match of the word under cursor (VS Code-style). **Ctrl+Up / Ctrl+Down** — vertical cursors. **Esc** clears extras. (`multicursor.nvim`)
+- **`:q!`** — force close window, discard edits. **`:bd!`** — force delete buffer keeping layout. **`:e!`** — reload from disk, discarding edits. **`<leader>bd`** — close buffer (LazyVim default; prompts if unsaved).
+- **`<leader>uf`** — toggle global autoformat. **`<leader>uF`** — toggle buffer autoformat. **`:LazyFormat`** — format on demand. (Format-on-save is enabled by default.)
+- **`<leader>cp`** — Markdown browser preview (from LazyVim's `lang.markdown` extra). **`<leader>cd`** — show agent (Claude Code) diff via code-preview.nvim.
+- **`<leader>mm`** — toggle the minimap (right side). **`<leader>ma`** — align multi-cursor columns.
+
+### Git
+- Inline blame shows at end-of-line after 300ms idle (gitsigns).
+- **`<leader>gg`** — LazyGit. **`<leader>gf`** — LazyGit for the current file.
+- **`<leader>ghs / ghr / ghp`** — stage / reset hunk / preview hunk (gitsigns).
 
 ## How It Works
 
@@ -111,11 +140,6 @@ fi
 # Work-specific configuration
 if [[ "$IS_WORK" == "true" ]]; then
     # Work-specific settings
-fi
-
-# AWS profile (if set)
-if [[ -n "$AWS_PROFILE" ]]; then
-    export AWS_DEFAULT_PROFILE="$AWS_PROFILE"
 fi
 ```
 
@@ -328,13 +352,26 @@ git checkout .              # Restore your dotfiles version (if needed)
 
 The setup script will:
 - Detect your OS (macOS/Linux)
-- Prompt for machine type (work/personal) and identity (name, **GitHub org**, **git email**, AWS profile). **GitHub org** defaults from **`GITHUB_ORG`** in your environment, then from **`~/.config/shell/personal.env`** if unset; the prompt shows **`[YourOrg]`** or **`[None]`**. Press **Enter** to keep the current value; type **`None`** (any case) to clear it. **Git email** uses the same pattern: **`GIT_EMAIL`**, then **`git config --global user.email`**, then **`personal.env`**; **`[None]`** / **`None`** clear and remove global **`user.email`**.
+- Prompt for machine type (work/personal) and identity (name, **GitHub org**, **git email**). **GitHub org** defaults from **`GITHUB_ORG`** in your environment, then from **`~/.config/shell/personal.env`** if unset; the prompt shows **`[YourOrg]`** or **`[None]`**. Press **Enter** to keep the current value; type **`None`** (any case) to clear it. **Git email** uses the same pattern: **`GIT_EMAIL`**, then **`git config --global user.email`**, then **`personal.env`**; **`[None]`** / **`None`** clear and remove global **`user.email`**.
 - Ask for **interactive shell**: **zsh only** (default) or **Nushell** (adds `personal.nu`, nushell dirs, **carapace**, **nushell** install — **zsh** is still fully configured)
 - Optionally install **vivid**, **fzf**, and related tools (macOS: Homebrew; Linux: **dnf/apt** with mapped package names). **Enter** accepts the default (**yes**).
 - Let you pick a **Nerd Font** (branch/Python icons in Starship need it); macOS installs font **casks** when possible
 - Ask for **primary terminal**: **WezTerm** (default; installs WezTerm if missing; writes **`~/.config/wezterm/local.lua`** for font + optional **`nu`**) vs **Other / OS Default** (echo-only font hints; no `local.lua`; on macOS use Terminal.app or another terminal and set the font yourself)
 - Install **stow**, **starship**, **zoxide** (always); **`carapace`** / **`nu`** only if Nushell was chosen
 - Generate **`~/.config/shell/personal.env`**, optionally **`personal.nu`**, and **`~/.zsh_local_rc`** only when that file is **missing or empty** (reruns **preserve** a non-empty **`~/.zsh_local_rc`**), configure **git**, and print **post-setup** notes (icons, fonts, `stow .`)
+
+### Git SSH commit signing
+
+`.config/git/config` enables SSH commit + tag signing using your `~/.ssh/id_ed25519.pub` key and trusts entries in `.config/git/allowed_signers`. On a fresh machine:
+
+1. Make sure `~/.ssh/id_ed25519` exists (`ssh-keygen -t ed25519 -C "you@example.com"` if not). Edit `.config/git/allowed_signers` to include your `<email> ssh-ed25519 <pubkey> <comment>` line.
+2. Run `stow .` so `~/.config/git/config` and `~/.config/git/allowed_signers` link into place.
+3. Add the **same public key** at *GitHub → Settings → SSH and GPG keys → New SSH key* with **Key type: Signing Key** (separate from the auth key entry).
+4. Verify: `git commit --allow-empty -m "test"` then `git log --show-signature -1` should print `Good "git" signature`.
+
+### Upgrading from older personal.env
+
+If you have `export AWS_PROFILE=""` in `~/.config/shell/personal.env`, **remove that line** — it sets the variable to an empty string in every new shell. The dotfiles no longer manage `AWS_PROFILE`.
 
 ## Customization
 
@@ -360,7 +397,6 @@ Available in shell configurations (sourced from `~/.config/shell/personal.env`):
 - `$IS_MACOS` - "true" on macOS, "false" on Linux  
 - `$GITHUB_ORG` - Your GitHub organization (may be empty; **`gh_search --org`** needs it set)
 - `$GIT_EMAIL` - Your git commit email (may be empty)
-- `$AWS_PROFILE` - Your AWS default profile (if set)
 - `$NAME` - Your full name
 
 ### Shell Conditional Examples

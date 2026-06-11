@@ -2,6 +2,9 @@
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
 
+vim.g.lazyvim_python_lsp = "ty"
+
+
 local opt = vim.opt
 
 -- Line numbers
@@ -44,6 +47,9 @@ opt.splitbelow = true
 -- File encoding
 opt.fileencoding = "utf-8"
 
+-- Reload files changed outside Neovim (e.g. Claude Code agent writes)
+opt.autoread = true
+
 -- Undo & backup
 opt.undofile = true
 opt.backup = false
@@ -83,14 +89,9 @@ opt.cmdheight = 1
 -- Show mode
 opt.showmode = false
 
--- Folding (using treesitter)
-opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()"
-opt.foldenable = false -- Don't fold by default
-
--- Performance
-opt.lazyredraw = false
-opt.ttyfast = true
+-- Folding: LazyVim sets foldmethod=expr and foldexpr to the treesitter API;
+-- just disable auto-fold so files open fully expanded.
+opt.foldenable = false
 
 -- Window title
 opt.title = true
