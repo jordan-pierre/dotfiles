@@ -4,6 +4,10 @@
 
 set -e
 
+# Repo root (this script lives in <repo>/scripts) — used to locate the Brewfile
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 echo "🚀 Setting up dotfiles with stow..."
 echo ""
 
@@ -156,6 +160,27 @@ case "$install_cli_tools_lc" in
         INSTALL_CLI_TOOLS=false
         ;;
 esac
+
+# -----------------------------------------------------------------------------
+# Brewfile bundle (macOS only) — installs formulae, casks, apps, VSCode & uv tools
+# -----------------------------------------------------------------------------
+INSTALL_BREWFILE=false
+if [[ "$OS" == "macos" ]] && [[ -f "$REPO_ROOT/Brewfile" ]]; then
+    echo ""
+    echo "🍺 A Brewfile was found — 'brew bundle' installs everything in it,"
+    echo "   including GUI casks and App Store / office apps."
+    echo "   The shared Brewfile plus the $MACHINE_TYPE overlay (Brewfile.$MACHINE_TYPE) will be used."
+    read -r -p "Install all packages from the Brewfile? [Y/n]: " install_brewfile
+    install_brewfile_lc=$(printf '%s' "${install_brewfile:-Y}" | tr '[:upper:]' '[:lower:]')
+    case "$install_brewfile_lc" in
+        y|yes)
+            INSTALL_BREWFILE=true
+            ;;
+        *)
+            INSTALL_BREWFILE=false
+            ;;
+    esac
+fi
 
 # -----------------------------------------------------------------------------
 # Nerd Font menu (default first, alphabetical, Other last)
@@ -436,6 +461,28 @@ install_stow_if_needed() {
 }
 
 install_stow_if_needed
+
+# -----------------------------------------------------------------------------
+# Brewfile bundle (macOS only) — run before individual tool installs below,
+# which then become no-ops for anything the Brewfile already covers
+# -----------------------------------------------------------------------------
+if [[ "$INSTALL_BREWFILE" == "true" ]]; then
+    if command -v brew &> /dev/null; then
+        # Shared Brewfile first, then the machine-specific overlay if present
+        echo "🍺 Installing packages from Brewfile (shared)..."
+        brew bundle install --file="$REPO_ROOT/Brewfile" || \
+            echo "⚠️  brew bundle (shared) reported errors — review output above."
+
+        overlay="$REPO_ROOT/Brewfile.$MACHINE_TYPE"
+        if [[ -f "$overlay" ]]; then
+            echo "🍺 Installing packages from Brewfile.$MACHINE_TYPE ($MACHINE_TYPE overlay)..."
+            brew bundle install --file="$overlay" || \
+                echo "⚠️  brew bundle ($MACHINE_TYPE overlay) reported errors — review output above."
+        fi
+    else
+        echo "⚠️  Homebrew not found — skipping Brewfile. Install brew: https://brew.sh"
+    fi
+fi
 
 # Starship / zoxide (always)
 ensure_binary starship starship starship starship "starship" || {

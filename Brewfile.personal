@@ -1,0 +1,5 @@
+# Personal-only overlay — layered on top of the shared Brewfile for personal machines.
+# Applied by setup.sh when the machine type is "personal".
+#
+# Add personal-machine apps here, e.g.:
+#   cask "spotify"
