@@ -155,6 +155,13 @@ if [[ "$IS_MACOS" == "true" ]]; then
     # Zscaler management (work-related but macOS-specific)
     alias start-zscaler="open -a /Applications/Zscaler/Zscaler.app --hide; sudo find /Library/LaunchDaemons -name '*zscaler*' -exec launchctl load {} \;"
     alias kill-zscaler="find /Library/LaunchAgents -name '*zscaler*' -exec launchctl unload {} \;;sudo find /Library/LaunchDaemons -name '*zscaler*' -exec launchctl unload {} \;"
+
+    # Brewfile helpers: install a package AND record it to the right Brewfile.
+    # Usage: brew-add ripgrep   |   brew-add-work slack --cask   |   brew-add-personal spotify --cask
+    DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+    brew-add()          { brew bundle add "$@" --install --file="$DOTFILES_DIR/Brewfile"; }
+    brew-add-work()     { brew bundle add "$@" --install --file="$DOTFILES_DIR/Brewfile.work"; }
+    brew-add-personal() { brew bundle add "$@" --install --file="$DOTFILES_DIR/Brewfile.personal"; }
 fi
 
 # =========================
