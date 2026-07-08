@@ -1,0 +1,12 @@
+# Work-only overlay — layered on top of the shared Brewfile for work machines.
+# Applied by setup.sh when the machine type is "work".
+
+# Kubernetes CLI To Manage Your Clusters In Style!
+brew "k9s"
+# Client for the Box cloud storage service
+cask "box-drive"
+# Office suite
+cask "microsoft-office-businesspro"
+vscode "outerbounds.vscode-outerbounds"
+uv "jiratui"
+uv "outerbounds"

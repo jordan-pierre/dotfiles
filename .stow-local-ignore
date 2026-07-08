@@ -4,3 +4,4 @@ scripts
 README\.md
 nvim\.log
 \.config/raycast
+Brewfile.*
