@@ -8,3 +8,4 @@ nvim\.log
 \.claude/todos
 \.claude/MEMORY\.md
 \.claude/plugins
+Brewfile.*
