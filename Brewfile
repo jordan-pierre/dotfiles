@@ -21,6 +21,8 @@ brew "libmagic"
 brew "libomp"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
+# Fast pre-commit hook manager (drop-in replacement for pre-commit)
+brew "prek"
 # Cross-shell prompt for astronauts
 brew "starship"
 # Organize software neatly under a single directory tree (e.g. /usr/local)

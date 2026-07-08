@@ -4,4 +4,8 @@ scripts
 README\.md
 nvim\.log
 \.config/raycast
+\.claude/projects
+\.claude/todos
+\.claude/MEMORY\.md
+\.claude/plugins
 Brewfile.*
