@@ -75,6 +75,9 @@ return {
           ["<"] = "prev_source",
           [">"] = "next_source",
           ["H"] = "toggle_hidden",
+          -- Resize the tree while it's focused: ] wider, [ narrower
+          ["]"] = function() vim.cmd("vertical resize +5") end,
+          ["["] = function() vim.cmd("vertical resize -5") end,
         },
       },
       default_component_configs = {

@@ -1,10 +1,14 @@
 # Shared Brewfile — installed on every machine (work and personal).
 # Machine-specific overlays: Brewfile.work and Brewfile.personal.
 
+# Clone of cat(1) with syntax highlighting and Git integration
+brew "bat"
 # Cloudflare-based speed test with optional TUI
 brew "cloudflare-speed-cli"
 # Modern, maintained replacement for ls
 brew "eza"
+# Simple, fast and user-friendly alternative to find
+brew "fd"
 # Command-line fuzzy finder written in Go
 brew "fzf"
 # GitHub command-line tool
@@ -23,6 +27,8 @@ brew "libomp"
 brew "neovim"
 # Fast pre-commit hook manager (drop-in replacement for pre-commit)
 brew "prek"
+# Search tool like grep and The Silver Searcher
+brew "ripgrep"
 # Cross-shell prompt for astronauts
 brew "starship"
 # Organize software neatly under a single directory tree (e.g. /usr/local)

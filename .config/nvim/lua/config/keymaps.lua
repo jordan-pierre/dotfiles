@@ -17,6 +17,7 @@ map("n", "<leader>eb", function() layout().toggle_shell() end, "Toggle bottom te
 map("n", "<leader>fe", function() layout().focus_editor() end, "Focus editor")
 map("n", "<leader>p", function() snacks_picker().picker.files() end, "Quick open file")
 map("n", "<leader>sg", function() snacks_picker().picker.grep() end, "Search in project")
+map("n", "<leader>rg", function() snacks_picker().picker.grep() end, "Search in project (ripgrep)")
 
 for i = 1, 9 do
   map("n", "<leader>" .. i, function() layout().goto_buffer_slot(i) end, "Buffer " .. i)

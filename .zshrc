@@ -130,7 +130,10 @@ alias ls='eza --icons --group-directories-first'
 alias ll='eza -l --icons --group-directories-first'
 alias la='eza -la --icons --group-directories-first'
 alias lt='eza --tree --level=2 --icons'
-alias cat='bat --paging=never'
+# Use bat as cat only in interactive shells (not Claude Code or scripts), and only if installed
+if [[ -o interactive ]] && [[ -z "$CLAUDECODE" ]] && command -v bat >/dev/null 2>&1; then
+  alias cat='bat --paging=never'
+fi
 alias find='fd'
 
 # TUI tool shortcuts
@@ -141,7 +144,8 @@ alias sysinfo='fastfetch'
 alias speed-test='cloudflare-speed-cli'
 
 # Other aliases
-alias vim='nvim'
+# vim → single-pane Neovim; bare `nvim` keeps the 3-pane IDE layout; `vi` stays vi
+alias vim='nvim --cmd "let g:started_with_layout = 0"'
 alias c='clear'
 alias k='kubectl'
 alias uvr='uv run'
