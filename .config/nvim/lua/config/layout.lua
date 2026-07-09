@@ -227,6 +227,25 @@ function M.toggle_neotree()
   end
 end
 
+function M.focus_neotree()
+  -- Open (if needed) and focus the file tree. Never hides it.
+  pcall(function()
+    require("neo-tree.command").execute({ action = "focus", source = "filesystem" })
+  end)
+end
+
+function M.toggle_neotree_show()
+  -- Toggle visibility WITHOUT stealing focus: show unfocused if hidden, close if shown.
+  local win = M.find_window(M.is_neotree_window)
+  if win then
+    M.close_neotree()
+  else
+    pcall(function()
+      require("neo-tree.command").execute({ action = "show", source = "filesystem" })
+    end)
+  end
+end
+
 function M.toggle_terminal(id, direction, size, display_name)
   local win = M.term_window_for_id(id)
   if win then
