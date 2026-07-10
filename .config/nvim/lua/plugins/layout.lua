@@ -107,6 +107,7 @@ return {
       spec = {
         { "<leader>e", group = "IDE layout / panes" },
         { "<leader>f", group = "find" },
+        { "<leader>r", group = "search / ripgrep" },
         { "<leader>c", group = "code / preview" },
         { "<leader>m", group = "minimap / markdown" },
         { "<leader>1", desc = "Buffer 1", hidden = false },
@@ -120,12 +121,22 @@ return {
       dashboard = { enabled = false },
       picker = {
         layout = {
+          -- Vertical: input+list on top, preview stacked below.
+          -- ("box" must be "horizontal"/"vertical" — "rounded" is a border style.)
           layout = {
-            box = "rounded",
-            border = "rounded",
-            title_pos = "center",
+            box = "vertical",
+            width = 0.92,
+            min_width = 100,
             height = 0.9,
-            width = 0.9,
+            {
+              box = "vertical",
+              border = "rounded",
+              title = "{title} {live} {flags}",
+              title_pos = "center",
+              { win = "input", height = 1, border = "bottom" },
+              { win = "list", border = "none" },
+            },
+            { win = "preview", title = "{preview}", border = "rounded", height = 0.5 },
           },
         },
         ui_select = true,

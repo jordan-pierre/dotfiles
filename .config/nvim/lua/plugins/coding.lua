@@ -144,6 +144,8 @@ return {
       indent = {
         char = "│",
         tab_char = "│",
+        -- Alternating theme colors per indent level (defined in theme.lua).
+        highlight = { "IndentAlt1", "IndentAlt2" },
       },
       scope = { enabled = false },
       exclude = {

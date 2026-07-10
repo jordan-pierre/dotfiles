@@ -101,6 +101,7 @@ opt.colorcolumn = "120"
 -- Show whitespace
 opt.list = true
 opt.listchars = {
+  lead = "·",
   trail = "·",
   tab = "↠ ",
   extends = "›",
