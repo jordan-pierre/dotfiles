@@ -60,19 +60,19 @@ return {
       shell = vim.o.shell,
     },
     keys = {
-      { "<D-b>", function() layout().toggle_neotree() end, mode = "n", desc = "Toggle file tree" },
+      { "<D-b>", function() layout().focus_neotree() end, mode = "n", desc = "Focus / open file tree" },
       { "<D-p>", function() snacks_picker().picker.files() end, mode = "n", desc = "Quick open file" },
       { "<D-S-f>", function() snacks_picker().picker.grep() end, mode = "n", desc = "Search in project" },
       { "<leader>p", function() snacks_picker().picker.files() end, mode = "n", desc = "Quick open file" },
       {
         "<leader>el",
-        function() layout().toggle_neotree() end,
-        desc = "Toggle file tree",
+        function() layout().focus_neotree() end,
+        desc = "Focus / open file tree",
       },
       {
         "<leader>eb",
-        function() layout().toggle_shell() end,
-        desc = "Toggle bottom terminal",
+        function() layout().toggle_neotree_show() end,
+        desc = "Show / hide file tree (no focus)",
       },
       {
         "<leader>er",
@@ -107,6 +107,7 @@ return {
       spec = {
         { "<leader>e", group = "IDE layout / panes" },
         { "<leader>f", group = "find" },
+        { "<leader>r", group = "search / ripgrep" },
         { "<leader>c", group = "code / preview" },
         { "<leader>m", group = "minimap / markdown" },
         { "<leader>1", desc = "Buffer 1", hidden = false },
@@ -120,12 +121,22 @@ return {
       dashboard = { enabled = false },
       picker = {
         layout = {
+          -- Vertical: input+list on top, preview stacked below.
+          -- ("box" must be "horizontal"/"vertical" — "rounded" is a border style.)
           layout = {
-            box = "rounded",
-            border = "rounded",
-            title_pos = "center",
+            box = "vertical",
+            width = 0.92,
+            min_width = 100,
             height = 0.9,
-            width = 0.9,
+            {
+              box = "vertical",
+              border = "rounded",
+              title = "{title} {live} {flags}",
+              title_pos = "center",
+              { win = "input", height = 1, border = "bottom" },
+              { win = "list", border = "none" },
+            },
+            { win = "preview", title = "{preview}", border = "rounded", height = 0.5 },
           },
         },
         ui_select = true,

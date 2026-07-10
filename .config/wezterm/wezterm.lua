@@ -98,6 +98,47 @@ wezterm.on("toggle-color-scheme", function(window, _pane)
 	window:set_config_overrides(overrides)
 end)
 
+-- Tab titles: identify the repo/project, not deep paths.
+-- Repos live in ~/Projects, so anywhere under it we show the project folder
+-- (the segment right under Projects) even from subdirectories; the literal
+-- "Projects" name only shows when sitting in ~/Projects itself. Elsewhere
+-- (e.g. ~/dotfiles) fall back to the cwd basename.
+local function tab_label(pane)
+	local proc = (pane.foreground_process_name or ""):match("([^/\\]+)$") or ""
+
+	local path
+	local uri = pane.current_working_dir
+	if uri then
+		path = type(uri) == "userdata" and uri.file_path or tostring(uri):gsub("^file://[^/]*", "")
+	end
+
+	local cwd = ""
+	if path and path ~= "" then
+		path = path:gsub("/$", "")
+		local projects = wezterm.home_dir .. "/Projects"
+		if path == projects then
+			cwd = "Projects"
+		elseif path:sub(1, #projects + 1) == projects .. "/" then
+			-- Under ~/Projects/<name>/... → the project name, regardless of depth
+			local rest = path:sub(#projects + 2)
+			cwd = rest:match("^([^/]+)") or rest
+		else
+			cwd = path:match("([^/]+)$") or path
+		end
+	end
+
+	local label = cwd ~= "" and cwd or proc
+	-- Append the running program unless it's just an idle shell
+	if cwd ~= "" and proc ~= "" and proc ~= "zsh" then
+		label = cwd .. " (" .. proc .. ")"
+	end
+	return label
+end
+
+wezterm.on("format-tab-title", function(tab, _tabs, _panes, _config, _hover, _max_width)
+	return string.format(" [%d] %s ", tab.tab_index + 1, tab_label(tab.active_pane))
+end)
+
 -- Font (Bold matches Cursor/VS Code terminal.integrated.fontWeight "bold")
 config.font = wezterm.font("JetBrainsMono Nerd Font", { weight = "Bold" })
 config.font_size = 15
@@ -114,6 +155,8 @@ config.hide_tab_bar_if_only_one_tab = true
 config.window_background_opacity = 0.92
 config.tab_bar_at_bottom = true
 config.use_fancy_tab_bar = false
+-- Allow wider tab titles before truncation (default is 16)
+config.tab_max_width = 32
 
 -- Subtle dim/brighten on unfocused panes; refined in window-config-reloaded
 config.inactive_pane_hsb = { brightness = 0.75, saturation = 0.95 }
@@ -311,10 +354,7 @@ end
 config.keys = {}
 -- Forward chords to Neovim (SUPER = Cmd in kitty protocol → <D-…> in Neovim)
 for _, spec in ipairs({
-  { key = "b", mods = "CMD", send = { key = "b", mods = "SUPER" } },
   { key = "p", mods = "CMD", send = { key = "p", mods = "SUPER" } },
-  { key = "f", mods = "CMD|SHIFT", send = { key = "f", mods = "SUPER|SHIFT" } },
-  -- Cmd+W: close current buffer in nvim; otherwise close WezTerm tab (handled below)
 }) do
   table.insert(config.keys, {
     key = spec.key,
@@ -322,17 +362,11 @@ for _, spec in ipairs({
     action = send_to_nvim(spec.send.key, spec.send.mods),
   })
 end
--- Cmd+W: nvim → close buffer (<D-w>); elsewhere → close tab (existing behavior)
+-- Cmd+W: always close the active WezTerm pane, regardless of focused program
 table.insert(config.keys, {
   key = "w",
   mods = "CMD",
-  action = wezterm.action_callback(function(win, pane)
-    if is_nvim_pane(pane) then
-      win:perform_action(wezterm.action.SendKey({ key = "w", mods = "SUPER" }), pane)
-    else
-      win:perform_action(wezterm.action.CloseCurrentTab({ confirm = true }), pane)
-    end
-  end),
+  action = wezterm.action.CloseCurrentPane({ confirm = true }),
 })
 -- IDE companion panes: true toggle + cross-pane jump
 table.insert(config.keys, {

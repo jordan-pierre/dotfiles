@@ -11,12 +11,36 @@ local function map(mode, lhs, rhs, desc)
 end
 
 -- Leader fallbacks (always work in WezTerm terminal Neovim)
-map("n", "<leader>el", function() layout().toggle_neotree() end, "Toggle file tree")
+map("n", "<leader>el", function() layout().focus_neotree() end, "Focus / open file tree")
 map("n", "<leader>er", function() layout().toggle_claude() end, "Toggle Claude terminal")
-map("n", "<leader>eb", function() layout().toggle_shell() end, "Toggle bottom terminal")
+map("n", "<leader>eb", function() layout().toggle_neotree_show() end, "Show / hide file tree (no focus)")
 map("n", "<leader>fe", function() layout().focus_editor() end, "Focus editor")
 map("n", "<leader>p", function() snacks_picker().picker.files() end, "Quick open file")
 map("n", "<leader>sg", function() snacks_picker().picker.grep() end, "Search in project")
+map("n", "<leader>rg", function() snacks_picker().picker.grep() end, "Search in project (ripgrep)")
+-- Scoped ripgrep searches
+map("n", "<leader>rd", function()
+  snacks_picker().picker.grep({ dirs = { vim.fn.expand("%:p:h") } })
+end, "Search in current file's dir")
+map("n", "<leader>rt", function()
+  vim.ui.input({ prompt = "Grep glob (e.g. *.py, *.sql): " }, function(glob)
+    if glob and glob ~= "" then
+      snacks_picker().picker.grep({ glob = glob })
+    end
+  end)
+end, "Search by file glob / type")
+map("n", "<leader>rc", function()
+  local ok, state = pcall(function()
+    return require("neo-tree.sources.manager").get_state("filesystem")
+  end)
+  local node = ok and state and state.tree and state.tree:get_node()
+  if not node then
+    vim.notify("No neo-tree node under cursor", vim.log.levels.WARN)
+    return
+  end
+  local path = node.type == "directory" and node.path or vim.fn.fnamemodify(node.path, ":h")
+  snacks_picker().picker.grep({ dirs = { path } })
+end, "Search in neo-tree dir")
 
 for i = 1, 9 do
   map("n", "<leader>" .. i, function() layout().goto_buffer_slot(i) end, "Buffer " .. i)
@@ -75,4 +99,25 @@ vim.keymap.set("v", "<A-Down>",
 
 -- Minimap toggle (uses neominimap.nvim; defined in plugins/ui.lua)
 map("n", "<leader>mm", "<cmd>Neominimap Toggle<cr>", "Toggle minimap")
+
+-- Treesitter function motions (nvim-treesitter main branch).
+-- ]f / [f = next / prev function start; ]F / [F = next / prev function end.
+-- Set after plugins load so the move API is available; guarded with pcall.
+vim.api.nvim_create_autocmd("User", {
+  pattern = "VeryLazy",
+  once = true,
+  callback = function()
+    local ok, move = pcall(require, "nvim-treesitter-textobjects.move")
+    if not ok then return end
+    local function tsmap(lhs, fn, query, desc)
+      vim.keymap.set({ "n", "x", "o" }, lhs, function()
+        fn(query, "textobjects")
+      end, { desc = desc, silent = true })
+    end
+    tsmap("]f", move.goto_next_start, "@function.outer", "Next function start")
+    tsmap("[f", move.goto_previous_start, "@function.outer", "Prev function start")
+    tsmap("]F", move.goto_next_end, "@function.outer", "Next function end")
+    tsmap("[F", move.goto_previous_end, "@function.outer", "Prev function end")
+  end,
+})
 

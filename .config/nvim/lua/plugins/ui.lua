@@ -75,6 +75,9 @@ return {
           ["<"] = "prev_source",
           [">"] = "next_source",
           ["H"] = "toggle_hidden",
+          -- Resize the tree while it's focused: ] wider, [ narrower
+          ["]"] = function() vim.cmd("vertical resize +5") end,
+          ["["] = function() vim.cmd("vertical resize -5") end,
         },
       },
       default_component_configs = {
@@ -150,7 +153,7 @@ return {
         lualine_x = { { "filename", path = 1 } },
         -- Right: filetype | line:col
         lualine_y = { { "filetype", icon_only = false } },
-        lualine_z = { "location" },
+        lualine_z = { "progress", "location" },
       })
       return opts
     end,
@@ -203,7 +206,9 @@ return {
     event = "VeryLazy",
     init = function()
       vim.g.neominimap = {
-        auto_enable = true,
+        -- Off by default: the always-on minimap caused WezTerm redraw ghosting
+        -- (duplicated / partially-clipped lines). Toggle on demand with <leader>mm.
+        auto_enable = false,
         layout = "split",
         split = {
           direction = "right",
@@ -218,6 +223,32 @@ return {
         click = { enabled = true, auto_switch_focus = false },
       }
     end,
+  },
+
+  {
+    -- Thin marks-scrollbar: viewport position + diagnostic / git / search /
+    -- cursor ticks on the right edge. Gives the minimap's spatial info without
+    -- rendering a text minimap (that caused WezTerm ghosting). Remove if it
+    -- reintroduces artifacts.
+    "lewis6991/satellite.nvim",
+    event = "VeryLazy",
+    opts = {
+      current_only = false,
+      winblend = 50,
+      zindex = 40,
+      excluded_filetypes = {
+        "neo-tree", "toggleterm", "snacks_dashboard", "neominimap",
+        "lazy", "mason", "trouble", "qf",
+      },
+      handlers = {
+        cursor = { enable = true },
+        search = { enable = true },
+        diagnostic = { enable = true },
+        gitsigns = { enable = true },
+        marks = { enable = true, show_builtins = false },
+        quickfix = { enable = true },
+      },
+    },
   },
 
   {
