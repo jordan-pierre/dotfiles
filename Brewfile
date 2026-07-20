@@ -35,6 +35,8 @@ brew "starship"
 brew "stow"
 # Programmatically correct mistyped console commands
 brew "thefuck"
+# Fast, keyboard-driven terminal UI for todo.txt
+brew "tuxedo"
 # Extremely fast Python package installer and resolver, written in Rust
 brew "uv"
 # Generator for LS_COLORS with support for multiple color themes

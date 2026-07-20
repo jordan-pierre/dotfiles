@@ -316,7 +316,16 @@ function M.editor_buffers()
 end
 
 function M.goto_buffer_slot(n)
-  local buf = M.editor_buffers()[n]
+  -- Resolve slot n from bufferline's rendered order so the number shown on a
+  -- buffer is the same n that jumps to it. Fall back to the MRU list if
+  -- bufferline isn't loaded.
+  local buf
+  local ok, bufferline = pcall(require, "bufferline")
+  if ok then
+    local elements = bufferline.get_elements().elements
+    buf = elements[n] and elements[n].id
+  end
+  buf = buf or M.editor_buffers()[n]
   if not buf then
     return
   end

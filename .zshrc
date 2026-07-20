@@ -142,6 +142,7 @@ alias lzg='lazygit'
 alias top='btop'
 alias sysinfo='fastfetch'
 alias speed-test='cloudflare-speed-cli'
+alias tux='tuxedo'
 
 # Other aliases
 # vim → single-pane Neovim; bare `nvim` keeps the 3-pane IDE layout; `vi` stays vi

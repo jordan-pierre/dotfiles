@@ -166,4 +166,40 @@ return {
     },
     main = "ibl",
   },
+
+  -- Autocomplete tuned to feel like VS Code.
+  {
+    "saghen/blink.cmp",
+    opts = {
+      keymap = {
+        -- Tab accepts the selected item (VS Code style).
+        preset = "super-tab",
+        -- Right arrow also accepts the selected item.
+        ["<Right>"] = { "accept", "fallback" },
+        -- Enter only inserts a newline; it never accepts a completion.
+        ["<CR>"] = { "fallback" },
+        -- Up/Down rotate through the suggestion list.
+        ["<Up>"] = { "select_prev", "fallback" },
+        ["<Down>"] = { "select_next", "fallback" },
+        -- Esc dismisses the suggestion popup first, then leaves insert mode.
+        ["<Esc>"] = { "hide", "fallback" },
+      },
+      completion = {
+        -- Auto-select the first item so Tab accepts it immediately.
+        list = { selection = { preselect = true, auto_insert = false } },
+        -- Inline preview of the selected item.
+        ghost_text = { enabled = true },
+      },
+    },
+  },
+
+  -- Markdown/text list continuation: keep bullets & numbering going on Enter.
+  {
+    "dkarter/bullets.vim",
+    ft = { "markdown", "text", "gitcommit" },
+    init = function()
+      vim.g.bullets_enabled_file_types = { "markdown", "text", "gitcommit" }
+      vim.g.bullets_enable_in_empty_buffers = 0
+    end,
+  },
 }

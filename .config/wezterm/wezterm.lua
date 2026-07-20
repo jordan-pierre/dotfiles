@@ -59,6 +59,32 @@ local function sync_claude_theme(appearance)
 	end
 end
 
+-- Sync k9s skin to appearance. k9s live-reloads its ACTIVE skin file when the
+-- file content changes, so we overwrite `snazzy-auto.yaml` with the light/dark
+-- source skin. (Edit palettes in snazzy-light.yaml / snazzy-dark.yaml.)
+local k9s_skins_dir = wezterm.home_dir .. '/.config/k9s/skins'
+local function sync_k9s_skin(appearance)
+	local src = (appearance and appearance:find('Dark'))
+		and (k9s_skins_dir .. '/snazzy-dark.yaml')
+		or (k9s_skins_dir .. '/snazzy-light.yaml')
+	local sf = io.open(src, 'r')
+	if not sf then return end
+	local content = sf:read('*a')
+	sf:close()
+	local active = k9s_skins_dir .. '/snazzy-auto.yaml'
+	local cf = io.open(active, 'r')
+	if cf then
+		local current = cf:read('*a')
+		cf:close()
+		if current == content then return end
+	end
+	local out = io.open(active, 'w')
+	if out then
+		out:write(content)
+		out:close()
+	end
+end
+
 local function inactive_hsb_for_appearance(appearance)
 	if appearance and appearance:find("Dark") then
 		return { brightness = 0.75, saturation = 0.95 }
@@ -81,11 +107,13 @@ wezterm.on("window-config-reloaded", function(window, _pane)
 		window:set_config_overrides(overrides)
 	end
 	sync_claude_theme(appearance)
+	sync_k9s_skin(appearance)
 end)
 
 -- Initial sync on startup
 if wezterm.gui then
 	sync_claude_theme(wezterm.gui.get_appearance())
+	sync_k9s_skin(wezterm.gui.get_appearance())
 end
 
 -- Toggle light/dark manually (Cmd+Shift+T); next system theme change will sync again

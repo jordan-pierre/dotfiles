@@ -1,4 +1,11 @@
 return {
+  -- Show a stable ordinal number on each buffer; <leader>1-9 jump to the same
+  -- ordinals (see goto_buffer_slot in lua/config/layout.lua).
+  {
+    "akinsho/bufferline.nvim",
+    opts = { options = { numbers = "ordinal" } },
+  },
+
   {
     "nvim-neo-tree/neo-tree.nvim",
     opts = {
