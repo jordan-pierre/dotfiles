@@ -14,6 +14,12 @@
 [merge]
   conflictStyle = diff3
 
+[diff]
+  # Show the whole enclosing function in diffs (git diff / show / log -p), so a
+  # change inside a Metaflow @step method includes the full method rather than a
+  # slice. Pairs with the *.py diff=python driver in ~/.config/git/attributes.
+  functionContext = true
+
 [log]
   decorate = short
   abbrevCommit = true

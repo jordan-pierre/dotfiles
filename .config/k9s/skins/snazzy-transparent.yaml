@@ -1,91 +1,104 @@
 # -----------------------------------------------------------------------------
-# Snazzy skin with transparent background
+# Snazzy skin with transparent background — theme-adaptive
 # -----------------------------------------------------------------------------
-
+#
 # Adapted from: https://github.com/derailed/k9s/blob/master/skins/snazzy.yaml
+# Targets k9s v0.51.x skin schema.
+#
+# Main text/backgrounds use `default` so they inherit the terminal's own fg/bg
+# and stay readable in either a light or dark terminal. Accents use ANSI
+# palette names, which also track the terminal theme.
+#
+# CAVEAT: with a transparent background k9s cannot paint the selected-row
+# background, so the selection is shown via a bold, standout text color rather
+# than a filled bar. If you want a filled green selection bar, use the sibling
+# `snazzy-dark` (or `snazzy-light`) skin, which uses a solid background.
 
 # Skin...
 k9s:
   body:
-    fgColor: "#97979b"
+    fgColor: default
     bgColor: default
-    logoColor: "#5df669"
+    logoColor: green
   prompt:
-    fgColor: "#97979b"
+    fgColor: default
     bgColor: default
-    suggestColor: "#5df669"
+    suggestColor: green
   info:
-    fgColor: white
-    sectionColor: "#5df669"
+    fgColor: default
+    sectionColor: green
   dialog:
-    fgColor: "#97979b"
+    fgColor: default
     bgColor: default
-    buttonFgColor: "#97979b"
+    buttonFgColor: default
     buttonBgColor: default
-    buttonFocusFgColor: "#97979b"
-    buttonFocusBgColor: "#5df669"
-    labelFgColor: "#97979b"
-    fieldFgColor: "#5df669"
+    buttonFocusFgColor: black
+    buttonFocusBgColor: green
+    labelFgColor: default
+    fieldFgColor: green
   frame:
     border:
-      fgColor: "#5df669"
-      focusColor: "#5df669"
+      fgColor: green
+      focusColor: green
     menu:
-      fgColor: white
-      keyColor: "#57c7ff"
-      numKeyColor: "#ff6ac1"
+      fgColor: default
+      keyColor: cyan
+      numKeyColor: magenta
     crumbs:
-      fgColor: "#282a36"
-      bgColor: white
-      activeColor: "#f3f99d"
+      fgColor: black
+      bgColor: green
+      activeColor: "#d75f00"
     status:
-      newColor: "#eff0eb"
-      modifyColor: "#5df669"
-      addColor: "#57c7ff"
-      errorColor: "#ff5c57"
-      highlightColor: "#f3f99d"
-      killColor: mediumpurple
+      newColor: default
+      modifyColor: green
+      addColor: cyan
+      errorColor: red
+      highlightColor: "#d75f00"
+      killColor: magenta
       completedColor: gray
     title:
-      fgColor: "#5df669"
+      fgColor: green
       bgColor: default
-      highlightColor: white
-      counterColor: white
-      filterColor: "#57c7ff"
+      highlightColor: "#d75f00"
+      counterColor: cyan
+      filterColor: cyan
   views:
-    # Charts skins...
     charts:
       bgColor: default
       defaultDialColors:
-        - "#57c7ff"
-        - "#ff5c57"
+        - cyan
+        - red
       defaultChartColors:
-        - "#57c7ff"
-        - "#ff5c57"
+        - cyan
+        - red
     table:
-      fgColor: "#57c7ff"
+      fgColor: default
       bgColor: default
-      cursorColor: "#282a36:#5df669"
-      markColor: darkgoldenrod
+      # Transparent bg can't render a filled bar; make the selected row stand
+      # out with a bold, high-visibility text color instead.
+      cursorFgColor: "#d75f00"
+      cursorBgColor: default
+      markColor: "#d75f00"
       header:
-        fgColor: white
+        fgColor: cyan
         bgColor: default
-        sorterColor: orange
+        sorterColor: "#d75f00"
+        selectedSortColumnColor: cyan
     xray:
-      fgColor: "#57c7ff"
+      fgColor: default
       bgColor: default
-      cursorColor: "#5df669"
-      graphicColor: darkgoldenrod
+      cursorColor: green
+      graphicColor: "#d75f00"
       showIcons: false
     yaml:
-      keyColor: "#ff5c57"
-      colonColor: white
-      valueColor: "#f3f99d"
+      keyColor: red
+      colonColor: cyan
+      valueColor: default
     logs:
-      fgColor: white
+      fgColor: default
       bgColor: default
       indicator:
-        fgColor: white
+        fgColor: default
         bgColor: default
-        toggleOnColor: "#ff5c57"
-        toggleOffColor: white
+        toggleOnColor: red
+        toggleOffColor: default

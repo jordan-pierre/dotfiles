@@ -13,7 +13,7 @@ k9s:
     reactive: false
     noIcons: false
     defaultsToFullScreen: false
-    skin: snazzy-transparent
+    skin: snazzy-auto
   skipLatestRevCheck: false
   disablePodCounting: false
   shellPod:

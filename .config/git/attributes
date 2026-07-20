@@ -1,0 +1,7 @@
+# Enable git's built-in Python diff driver so hunk headers (@@ ... @@) match
+# indented definitions. Without this, git's default funcname regex only matches
+# column-0 definitions, so a change inside a class method shows the enclosing
+# `class ...` line instead of the method. With diff=python it matches the nearest
+# `def` / `async def` / `class`, i.e. the METHOD for changes inside a method.
+# Especially useful for Metaflow flows, where each step is a method on the flow.
+*.py diff=python

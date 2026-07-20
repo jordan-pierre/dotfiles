@@ -1,0 +1,106 @@
+# -----------------------------------------------------------------------------
+# Snazzy (dark) — solid background
+# -----------------------------------------------------------------------------
+#
+# Palette from the official Snazzy skin:
+#   https://github.com/derailed/k9s/blob/master/skins/snazzy.yaml
+# Targets k9s v0.51.x skin schema.
+#
+# Auto light/dark: this is a SOURCE skin. The active skin is `snazzy-auto`,
+# which WezTerm rewrites from this file (dark) or `snazzy-light` (light) on
+# macOS appearance change; k9s live-reloads. Edit palettes here, not in
+# snazzy-auto (it is overwritten).
+#
+# SELECTION BAR: k9s draws the selected row's background in that row's own text
+# color (cell.Color), ignoring cursorBgColor for unmarked rows
+# (derailed/k9s#3442). So the bar color == table.fgColor. We use Snazzy green
+# for both => green rows AND a green selection bar, with white text on the
+# selected row (cursorFgColor). A solid bg is required for the bar to render.
+
+# Skin...
+k9s:
+  body:
+    fgColor: "#97979b"
+    bgColor: "#282a36"
+    logoColor: "#5af78e"
+  prompt:
+    fgColor: "#97979b"
+    bgColor: "#282a36"
+    suggestColor: "#5af78e"
+  info:
+    fgColor: "#eff0eb"
+    sectionColor: "#5af78e"
+  dialog:
+    fgColor: "#97979b"
+    bgColor: "#282a36"
+    buttonFgColor: "#282a36"
+    buttonBgColor: "#97979b"
+    buttonFocusFgColor: "#282a36"
+    buttonFocusBgColor: "#5af78e"
+    labelFgColor: "#f3f99d"
+    fieldFgColor: "#5af78e"
+  frame:
+    border:
+      fgColor: "#5af78e"
+      focusColor: "#57c7ff"
+    menu:
+      fgColor: "#eff0eb"
+      keyColor: "#57c7ff"
+      numKeyColor: "#ff6ac1"
+    crumbs:
+      fgColor: "#282a36"
+      bgColor: "#5af78e"
+      activeColor: "#f3f99d"
+    status:
+      newColor: "#57c7ff"
+      modifyColor: "#5af78e"
+      addColor: "#5af78e"
+      errorColor: "#ff5c57"
+      highlightColor: "#f3f99d"
+      killColor: "#ff6ac1"
+      completedColor: "#97979b"
+    title:
+      fgColor: "#5af78e"
+      bgColor: "#282a36"
+      highlightColor: "#f3f99d"
+      counterColor: "#57c7ff"
+      filterColor: "#57c7ff"
+  views:
+    charts:
+      bgColor: "#282a36"
+      defaultDialColors:
+        - "#57c7ff"
+        - "#ff5c57"
+      defaultChartColors:
+        - "#57c7ff"
+        - "#ff5c57"
+    table:
+      # Green row text => green selection bar (see header note on #3442).
+      fgColor: "#5af78e"
+      bgColor: "#282a36"
+      cursorFgColor: "#ffffff"
+      cursorBgColor: "#5af78e"
+      markColor: "#f3f99d"
+      header:
+        fgColor: "#57c7ff"
+        bgColor: "#282a36"
+        sorterColor: "#f3f99d"
+        selectedSortColumnColor: "#57c7ff"
+    xray:
+      fgColor: "#5af78e"
+      bgColor: "#282a36"
+      cursorColor: "#5af78e"
+      graphicColor: "#ff6ac1"
+      showIcons: false
+    yaml:
+      keyColor: "#ff5c57"
+      colonColor: "#eff0eb"
+      valueColor: "#f3f99d"
+    logs:
+      fgColor: "#97979b"
+      bgColor: "#282a36"
+      indicator:
+        fgColor: "#eff0eb"
+        bgColor: "#282a36"
+        toggleOnColor: "#ff5c57"
+        toggleOffColor: "#97979b"
