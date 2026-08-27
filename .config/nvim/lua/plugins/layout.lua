@@ -119,6 +119,7 @@ return {
     "folke/snacks.nvim",
     opts = {
       dashboard = { enabled = false },
+      image = { enabled = true },
       picker = {
         layout = {
           -- Vertical: input+list on top, preview stacked below.
