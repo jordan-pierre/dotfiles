@@ -1,0 +1,7 @@
+x 2026-07-20 2026-07-16 +nvim make autocomplete behave more like VS Code
+x 2026-07-20 2026-07-16 +nvim buffers in the nvim window should show their buffer number
+x 2026-07-20 2026-07-16 +nvim when editing markdown, how to stay in list mode on enter
+x 2026-07-16 2026-07-16 +tuxedo add tokyo night themes
+2026-07-16 see if any of this guys settings or plugins are worth taking https://github.com/IogaMaster/neovim/tree/main/lua +nvim
+x 2026-07-20 2026-07-17 Add "tux" as an alias for "tuxedo" +zshrc
+2026-07-22 Allow yazi to copy files to clipboard: https://github.com/XYenon/clipboard.yazi
