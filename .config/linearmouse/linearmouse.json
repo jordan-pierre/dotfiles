@@ -1,31 +1,44 @@
 {
-  "$schema" : "https:\/\/schema.linearmouse.app\/0.11.2",
+  "$schema" : "https:\/\/schema.linearmouse.app\/0.12.0",
   "schemes" : [
     {
       "buttons" : {
         "mappings" : [
           {
-            "button" : 1,
-            "command" : false,
-            "control" : false,
-            "option" : false,
-            "shift" : false
+            "outcomes" : {
+              "shortPress" : "auto"
+            },
+            "trigger" : {
+              "input" : {
+                "button" : 1
+              }
+            }
           },
           {
-            "action" : "mouse.button.back",
-            "button" : 2,
-            "command" : false,
-            "control" : false,
-            "option" : false,
-            "shift" : false
+            "outcomes" : {
+              "press" : {
+                "action" : "mouse.button.back",
+                "behavior" : "remap"
+              }
+            },
+            "trigger" : {
+              "input" : {
+                "button" : 2
+              }
+            }
           },
           {
-            "action" : "mouse.button.forward",
-            "button" : 3,
-            "command" : false,
-            "control" : false,
-            "option" : false,
-            "shift" : false
+            "outcomes" : {
+              "press" : {
+                "action" : "mouse.button.forward",
+                "behavior" : "remap"
+              }
+            },
+            "trigger" : {
+              "input" : {
+                "button" : 3
+              }
+            }
           }
         ]
       },
@@ -53,6 +66,39 @@
         "speed" : {
           "vertical" : 42
         }
+      }
+    },
+    {
+      "if" : {
+        "device" : {
+          "category" : "trackpad",
+          "productID" : "0x0",
+          "productName" : "Apple Internal Keyboard \/ Trackpad",
+          "serialNumber" : "FM7HQW0B9ZS0000DZT+ANRM",
+          "vendorID" : "0x0"
+        }
+      },
+      "scrolling" : {
+        "acceleration" : {
+          "vertical" : 0.73
+        }
+      }
+    },
+    {
+      "if" : {
+        "device" : {
+          "category" : "trackpad",
+          "productID" : "0x324",
+          "productName" : "Magic Trackpad #2",
+          "serialNumber" : "04:41:A5:8B:3C:39",
+          "vendorID" : "0x4c"
+        }
+      },
+      "pointer" : {
+        "acceleration" : "unset",
+        "disableAcceleration" : false,
+        "redirectsToScroll" : false,
+        "speed" : "unset"
       }
     }
   ]
